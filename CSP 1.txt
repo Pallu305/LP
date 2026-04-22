@@ -1,0 +1,328 @@
+Here is a **complete practical answer** (theory + corrected code + explanation + example) based on your attached sheets.
+
+---
+
+# ✅ Practical No. 1
+
+## Constraint Satisfaction Problem (CSP) – N-Queens
+
+Using **Backtracking** and **Branch & Bound**
+
+---
+
+# 🔷 1. Aim
+
+To implement a solution for the **N-Queens problem** using:
+
+* Backtracking
+* Branch and Bound
+
+---
+
+# 🔷 2. Theory
+
+## 📌 What is CSP (Constraint Satisfaction Problem)?
+
+A CSP consists of:
+
+* **Variables** → positions of queens
+* **Domain** → possible columns (0 to N-1)
+* **Constraints** → no two queens attack each other
+
+---
+
+## 📌 N-Queens Problem
+
+Place **N queens on an N×N chessboard** such that:
+
+* No two queens are in the same row
+* No two queens are in the same column
+* No two queens are on the same diagonal
+
+---
+
+## 📌 Representation
+
+We use a **1D array**:
+
+```
+board[i] = column position of queen in row i
+```
+
+Example:
+
+```
+[1, 3, 0, 2]
+```
+
+Means:
+
+* Row 0 → Column 1
+* Row 1 → Column 3
+* Row 2 → Column 0
+* Row 3 → Column 2
+
+---
+
+# 🔷 3. Methods Used
+
+---
+
+## 🔹 A) Backtracking
+
+### ✔ Idea:
+
+* Try placing queen row by row
+* If conflict occurs → backtrack
+* Continue until solution is found
+
+### ✔ Time Complexity:
+
+* Worst case: **O(N!)**
+
+---
+
+## 🔹 B) Branch and Bound
+
+### ✔ Idea:
+
+* Use extra arrays to **avoid unnecessary checks**
+* Track:
+
+  * Columns
+  * Left diagonals
+  * Right diagonals
+
+### ✔ Advantage:
+
+* Faster than backtracking (prunes search space)
+
+---
+
+# 🔷 4. Python Implementation (Corrected & Complete)
+
+class NQueens:
+
+    # ---------------- BACKTRACKING ----------------
+    def solve_backtracking(self, n):
+        print("\nSolution using Backtracking:")
+        board = [-1] * n
+
+        def is_safe(row, col):
+            for i in range(row):
+                if board[i] == col or abs(board[i] - col) == abs(i - row):
+                    return False
+            return True
+
+        def solve(row):
+            if row == n:
+                print("Board:", board)
+                return True
+
+            for col in range(n):
+                if is_safe(row, col):
+                    board[row] = col
+
+                    if solve(row + 1):
+                        return True
+
+                    board[row] = -1  # Backtrack
+
+            return False
+
+        if not solve(0):
+            print("No solution exists.")
+
+    # ---------------- BRANCH AND BOUND ----------------
+    def solve_branch_bound(self, n):
+        print("\nSolution using Branch and Bound:")
+        board = [-1] * n
+
+        columns = [False] * n
+        left_diag = [False] * (2 * n)
+        right_diag = [False] * (2 * n)
+
+        def solve(row):
+            if row == n:
+                print("Board:", board)
+                return True
+
+            for col in range(n):
+                if (not columns[col] and
+                    not left_diag[row - col + n] and
+                    not right_diag[row + col]):
+
+                    board[row] = col
+                    columns[col] = True
+                    left_diag[row - col + n] = True
+                    right_diag[row + col] = True
+
+                    if solve(row + 1):
+                        return True
+
+                    # Backtrack
+                    columns[col] = False
+                    left_diag[row - col + n] = False
+                    right_diag[row + col] = False
+
+            return False
+
+        if not solve(0):
+            print("No solution exists.")
+
+
+# ---------------- DRIVER CODE ----------------
+n = int(input("Enter value of N: "))
+
+solver = NQueens()
+solver.solve_backtracking(n)
+solver.solve_branch_bound(n)
+
+---
+
+# 🔷 5. Example
+
+## Input:
+
+```
+Enter value of N: 4
+```
+
+## Output:
+
+```
+Solution using Backtracking:
+Board: [1, 3, 0, 2]
+
+Solution using Branch and Bound:
+Board: [1, 3, 0, 2]
+```
+
+---
+
+# 🔷 6. Explanation of Output
+
+Board `[1, 3, 0, 2]` means:
+
+| Row | Column |
+| --- | ------ |
+| 0   | 1      |
+| 1   | 3      |
+| 2   | 0      |
+| 3   | 2      |
+
+✔ No queens attack each other
+✔ Valid solution
+
+---
+
+# 🔷 7. Comparison
+
+| Feature     | Backtracking          | Branch & Bound             |
+| ----------- | --------------------- | -------------------------- |
+| Approach    | Try all possibilities | Prune invalid states early |
+| Speed       | Slower                | Faster                     |
+| Extra Space | Less                  | More (arrays used)         |
+| Efficiency  | Lower                 | Higher                     |
+
+---
+
+# 🔷 8. Applications
+
+* Scheduling problems
+* Resource allocation
+* Puzzle solving (Sudoku, N-Queens)
+* AI search problems
+
+---
+
+# 🔷 9. Conclusion
+
+* The N-Queens problem is a classic CSP.
+* Backtracking ensures correctness but is slower.
+* Branch and Bound improves performance by reducing unnecessary checks.
+* Both methods successfully find valid queen placements.
+
+---
+
+Code Explanation (Backtracking)
+✔ Step 1: Initialize Board
+board = [-1] * n
+Initially no queen is placed
+-1 means empty
+✔ Step 2: Safety Check
+def is_safe(row, col):
+    for i in range(row):
+        if board[i] == col or abs(board[i] - col) == abs(i - row):
+            return False
+    return True
+✔ What it checks:
+Same column → board[i] == col
+Same diagonal → abs(board[i] - col) == abs(i - row)
+✔ Step 3: Recursive Function
+def solve(row):
+✔ Base Case:
+if row == n:
+    print("Board:", board)
+
+👉 All queens placed successfully
+
+✔ Try placing queen in each column:
+for col in range(n):
+✔ If safe → place queen:
+board[row] = col
+✔ Recursive call:
+if solve(row + 1):
+    return True
+✔ Backtracking:
+board[row] = -1
+
+👉 Remove queen and try next position
+
+🔁 Flow Summary:
+Place queen in row 0
+Move to row 1
+If conflict → go back (backtrack)
+Try next column
+Continue until solution
+🔷 3. Code Explanation (Branch & Bound)
+✔ Extra Arrays Used:
+columns = [False] * n
+left_diag = [False] * (2 * n)
+right_diag = [False] * (2 * n)
+✔ What they store:
+Array	Purpose
+columns	Track used columns
+left_diag	Track \ diagonal
+right_diag	Track / diagonal
+✔ Condition Check:
+if (not columns[col] and
+    not left_diag[row - col + n] and
+    not right_diag[row + col]):
+
+👉 Faster than checking all previous rows
+
+✔ Mark position:
+columns[col] = True
+left_diag[row - col + n] = True
+right_diag[row + col] = True
+✔ Backtrack:
+columns[col] = False
+left_diag[row - col + n] = False
+right_diag[row + col] = False
+🔷 4. Key Difference (Important for Viva)
+Backtracking	Branch & Bound
+Checks all previous rows	Uses arrays (fast lookup)
+Slower	Faster
+Simpler	Optimized
+🔷 5. Dry Run (Important 🔥)
+Step-wise (N=4):
+Row 0 → place at col 1
+Row 1 → place at col 3
+Row 2 → place at col 0
+Row 3 → place at col 2
+✔ Solution found
+🔷 6. One-Line Summary
+
+👉 Backtracking = try + undo
+👉 Branch & Bound = smart try + avoid useless work)

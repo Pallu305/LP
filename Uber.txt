@@ -1,0 +1,436 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error
+# 2 Load Dataset
+df = pd.read_csv('uber.csv')
+df.head()
+
+
+
+
+
+
+# Drop unnecessary identifier columns
+df = df.drop(columns=['Unnamed: 0', 'key'], errors='ignore')
+
+# Convert 'pickup_datetime' to datetime objects
+df['pickup_datetime'] = pd.to_datetime(df['pickup_datetime'], errors='coerce')
+df['hour']=df['pickup_datetime'].dt.hour
+
+print(df.head())
+print(df.info())
+
+
+
+
+
+
+print("\n Missing value in Each columns:\n",df.isnull().sum())
+
+
+
+
+
+
+# 3 Basic Cleaning: Drop missing values
+df = df.dropna()
+
+
+
+
+
+
+
+
+# 4 Identify Outliers (IQR method on fare_amount)
+
+sns.boxplot(df['fare_amount'])
+
+Q1 = df['fare_amount'].quantile(0.25)
+Q3 = df['fare_amount'].quantile(0.75)
+IQR = Q3 - Q1
+
+outliers = df[(df['fare_amount'] < Q1 - 1.5 * IQR) | (df['fare_amount'] > Q3 + 1.5 * IQR)]
+print("Number of outliers:", len(outliers))
+
+# Remove outliers
+df = df[~df.index.isin(outliers.index)]
+
+
+
+
+
+
+# 6 Feature Engineering: Calculate Haversine Distance
+def haversine_distance(lat1, lon1, lat2, lon2):
+    R = 6371  # km
+    phi1 = np.radians(lat1)
+    phi2 = np.radians(lat2)
+    delta_phi = np.radians(lat2 - lat1)
+    delta_lambda = np.radians(lon2 - lon1)
+
+    a = np.sin(delta_phi / 2)**2 + np.cos(phi1) * np.cos(phi2) * np.sin(delta_lambda / 2)**2
+    c = 2 * np.arctan2(np.sqrt(a), np.sqrt(1 - a))
+
+    return R * c
+
+df['distance_km'] = haversine_distance(
+    df['pickup_latitude'],
+    df['pickup_longitude'],
+    df['dropoff_latitude'],
+    df['dropoff_longitude']
+)
+
+
+
+# 5 Check Correlation
+plt.figure(figsize=(8, 6))
+sns.heatmap(df.select_dtypes(include=[np.number]).corr(), annot=True, cmap='coolwarm')
+plt.show()
+print("---------------------------------------------------")
+corr_col=['fare_amount','distance_km','passenger_count','hour']
+print(df[corr_col].corr().round(4).to_string())
+
+
+
+# 7 Prepare Features and Target
+X = df[['distance_km', 'passenger_count','hour']]
+y = df['fare_amount']
+
+
+
+# 8 Train-Test Split
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42
+)
+print(f"\nTraning Sample:{len(X_train)}")
+print(f"Testing Sample:{len(X_test)}")
+
+
+
+
+
+
+# 9 Linear Regression
+lr_model = LinearRegression()
+lr_model.fit(X_train, y_train)
+y_pred_lr = lr_model.predict(X_test)
+
+# 10 Random Forest Regression
+rf_model = RandomForestRegressor(n_estimators=100, random_state=42)
+rf_model.fit(X_train, y_train)
+y_pred_rf = rf_model.predict(X_test)
+
+
+
+
+
+from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error
+import numpy as np
+
+# Linear Regression metrics
+r2_lr = r2_score(y_test, y_pred_lr)
+rmse_lr = np.sqrt(mean_squared_error(y_test, y_pred_lr))
+mae_lr = mean_absolute_error(y_test, y_pred_lr)
+
+# Random Forest metrics
+r2_rf = r2_score(y_test, y_pred_rf)
+rmse_rf = np.sqrt(mean_squared_error(y_test, y_pred_rf))
+mae_rf = mean_absolute_error(y_test, y_pred_rf)
+
+print("\nMODEL TRAINING & EVALUATION\n")
+
+print("Metric        Linear Regression    Random Forest")
+print("------------------------------------------------")
+
+print(f"R2 Score      {r2_lr:.4f}              {r2_rf:.4f}")
+print(f"RMSE          {rmse_lr:.4f}              {rmse_rf:.4f}")
+print(f"MAE           {mae_lr:.4f}              {mae_rf:.4f}")
+
+# Better model
+if r2_rf > r2_lr:
+    print("\nBetter Model : Random Forest")
+else:
+    print("\nBetter Model : Linear Regression")
+
+
+
+
+
+
+
+print("\nSample: Actual vs Predicted")
+print("Actual   LR Pred   RF Pred")
+print("--------------------------")
+
+for i in range(5):   # just 5 rows
+    print(f"{y_test.iloc[i]:.2f}    {y_pred_lr[i]:.2f}    {y_pred_rf[i]:.2f}")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+THEORY:
+
+Here’s a **clear, structured explanation** of your Uber fare prediction code:
+
+---
+
+# 🔷 1. Libraries Used
+
+* **pandas, numpy** → data handling
+* **matplotlib, seaborn** → visualization
+* **sklearn** → machine learning models & evaluation
+
+---
+
+# 🔷 2. Load Dataset
+
+```python
+df = pd.read_csv('uber.csv')
+```
+
+* Loads Uber trip data into a DataFrame.
+
+```python
+df = df.drop(columns=['Unnamed: 0', 'key'], errors='ignore')
+```
+
+* Removes unnecessary ID columns.
+
+---
+
+# 🔷 3. Date-Time Processing
+
+```python
+df['pickup_datetime'] = pd.to_datetime(df['pickup_datetime'], errors='coerce')
+df['hour'] = df['pickup_datetime'].dt.hour
+```
+
+* Converts string → datetime
+* Extracts **hour feature** (important for fare variation)
+
+---
+
+# 🔷 4. Missing Values Handling
+
+```python
+df.isnull().sum()
+df = df.dropna()
+```
+
+* Checks null values
+* Drops rows with missing data
+
+---
+
+# 🔷 5. Outlier Detection (IQR Method)
+
+```python
+Q1 = df['fare_amount'].quantile(0.25)
+Q3 = df['fare_amount'].quantile(0.75)
+IQR = Q3 - Q1
+```
+
+* Defines range:
+
+  * Lower = Q1 − 1.5×IQR
+  * Upper = Q3 + 1.5×IQR
+
+```python
+df = df[~df.index.isin(outliers.index)]
+```
+
+* Removes extreme fare values (improves model accuracy)
+
+---
+
+# 🔷 6. Feature Engineering – Distance Calculation
+
+Uses **Haversine Formula** (distance between two geo points):
+
+d = 2R \arctan\left(\sqrt{\frac{\sin^2(\Delta\phi/2) + \cos(\phi_1)\cos(\phi_2)\sin^2(\Delta\lambda/2)}{1 - (\sin^2(\Delta\phi/2) + \cos(\phi_1)\cos(\phi_2)\sin^2(\Delta\lambda/2))}}\right)
+
+```python
+df['distance_km'] = haversine_distance(...)
+```
+
+* Converts latitude & longitude → **distance in km**
+* This is the **most important feature** for fare prediction
+
+---
+
+# 🔷 7. Correlation Analysis
+
+```python
+sns.heatmap(df.corr())
+```
+
+* Shows relationship between variables
+
+```python
+corr_col = ['fare_amount','distance_km','passenger_count','hour']
+```
+
+* Helps identify important features
+
+👉 Typically:
+
+* **distance_km → strong correlation**
+* **passenger_count/hour → weaker**
+
+---
+
+# 🔷 8. Feature & Target Selection
+
+```python
+X = df[['distance_km', 'passenger_count','hour']]
+y = df['fare_amount']
+```
+
+* **X (inputs)** → features
+* **y (output)** → fare
+
+---
+
+# 🔷 9. Train-Test Split
+
+```python
+train_test_split(test_size=0.2)
+```
+
+* 80% → training
+* 20% → testing
+
+---
+
+# 🔷 10. Linear Regression Model
+
+```python
+lr_model = LinearRegression()
+lr_model.fit(X_train, y_train)
+```
+
+### Concept:
+
+Fits equation:
+
+[
+y = b_0 + b_1x_1 + b_2x_2 + b_3x_3
+]
+
+* Assumes **linear relationship**
+
+---
+
+# 🔷 11. Random Forest Model
+
+```python
+rf_model = RandomForestRegressor(n_estimators=100)
+```
+
+### Concept:
+
+* Ensemble of decision trees
+* Captures **non-linear patterns**
+* More powerful than linear regression
+
+---
+
+# 🔷 12. Evaluation Metrics
+
+### (1) R² Score
+
+* Measures accuracy (0 to 1)
+* Higher = better
+
+### (2) RMSE
+
+[
+RMSE = \sqrt{\frac{1}{n} \sum (y - \hat{y})^2}
+]
+
+* Penalizes large errors
+
+### (3) MAE
+
+[
+MAE = \frac{1}{n} \sum |y - \hat{y}|
+]
+
+* Average error
+
+---
+
+# 🔷 13. Model Comparison
+
+```python
+if r2_rf > r2_lr:
+```
+
+* Compares models using **R²**
+* Prints best model
+
+👉 Usually:
+
+* **Random Forest performs better** (non-linear data)
+
+---
+
+# 🔷 14. Prediction Output
+
+```python
+for i in range(5):
+```
+
+Displays:
+
+* Actual fare
+* Linear Regression prediction
+* Random Forest prediction
+
+---
+
+# 🔷 🔥 Key Concepts Summary
+
+| Concept             | Purpose                               |
+| ------------------- | ------------------------------------- |
+| Data Cleaning       | Remove noise (missing + outliers)     |
+| Feature Engineering | Create meaningful features (distance) |
+| Correlation         | Select important variables            |
+| Linear Regression   | Simple baseline model                 |
+| Random Forest       | Advanced, accurate model              |
+| Evaluation Metrics  | Measure performance                   |
+
+---
+
+# 🔷 Final Understanding
+
+Your pipeline:
+
+```
+Raw Data → Cleaning → Feature Engineering → Model Training → Evaluation → Prediction
+```

@@ -1,0 +1,272 @@
+def fractional_knapsack(items, capacity):
+    # Sort by value-to-weight ratio (value / weight) in descending order
+    items.sort(key=lambda x: x[0] / x[1], reverse=True)
+    total_value = 0.0
+
+    for v, w in items:
+        if capacity >= w:
+            total_value, capacity = total_value + v, capacity - w
+        else:
+            total_value += (v / w) * capacity
+            break  # Bag is full
+
+    return total_value
+
+
+if __name__ == "__main__":
+    items = []
+    
+    n = int(input("Enter number of items: "))
+    
+    for i in range(n):
+        print(f"\nEnter details for Item {i+1}")
+        v = float(input("Value: "))
+        w = float(input("Weight: "))
+        
+        items.append((v, w))
+    
+    capacity = float(input("\nEnter knapsack capacity: "))
+    
+    result = fractional_knapsack(items, capacity)
+    
+    print(f"\nMaximum value in the knapsack: {result}")
+
+
+
+
+
+
+
+Here is a **complete, structured explanation** of the **Fractional Knapsack (Greedy Method)** along with your code.
+
+---
+
+# 🔹 1. Concept: Fractional Knapsack Problem
+
+You are given:
+
+* Items with:
+
+  * **Value (v)**
+  * **Weight (w)**
+* A knapsack with **limited capacity**
+
+👉 Goal:
+**Maximize total value** in the knapsack.
+
+---
+
+# 🔹 2. Key Idea (Greedy Strategy)
+
+Unlike 0/1 knapsack:
+
+* You can take **fractions of items**
+
+👉 Strategy:
+
+1. Compute **value/weight ratio**
+2. Pick items with **highest ratio first**
+3. Take:
+
+   * Full item if possible
+   * Otherwise, take fraction
+
+---
+
+# 🔹 3. Why Greedy Works Here
+
+* Local optimal choice (highest ratio)
+  → Always leads to **global optimal solution**
+
+✔ This is **not true** for 0/1 knapsack
+
+---
+
+# 🔹 4. Algorithm Steps
+
+1. Calculate ratio = `value / weight`
+2. Sort items in **descending ratio**
+3. For each item:
+
+   * If full item fits → take it
+   * Else → take fractional part
+
+---
+
+# 🔹 5. Code Explanation (Line by Line)
+
+```python
+def fractional_knapsack(items, capacity):
+```
+
+* Function to compute maximum value
+
+```python
+items.sort(key=lambda x: x[0] / x[1], reverse=True)
+```
+
+* Sort by value/weight ratio
+
+```python
+total_value = 0.0
+```
+
+* Store final result
+
+```python
+for v, w in items:
+```
+
+* Loop through items
+
+```python
+if capacity >= w:
+```
+
+* If full item fits
+
+```python
+total_value, capacity = total_value + v, capacity - w
+```
+
+* Add full value, reduce capacity
+
+```python
+else:
+    total_value += (v / w) * capacity
+    break
+```
+
+* Take fractional part and stop
+
+---
+
+# 🔹 6. Example (Dry Run)
+
+### Input:
+
+```text
+Items:
+(60,10), (100,20), (120,30)
+Capacity = 50
+```
+
+### Step 1: Compute Ratios
+
+| Item | Value | Weight | Ratio |
+| ---- | ----- | ------ | ----- |
+| 1    | 60    | 10     | 6     |
+| 2    | 100   | 20     | 5     |
+| 3    | 120   | 30     | 4     |
+
+---
+
+### Step 2: Sort by Ratio
+
+```text
+(60,10), (100,20), (120,30)
+```
+
+---
+
+### Step 3: Fill Knapsack
+
+| Item | Action     | Capacity Left | Value |
+| ---- | ---------- | ------------- | ----- |
+| 1    | Take full  | 40            | 60    |
+| 2    | Take full  | 20            | 160   |
+| 3    | Take 20/30 | 0             | 240   |
+
+---
+
+### Output:
+
+```text
+Maximum Value = 240
+```
+
+---
+
+# 🔹 7. Time and Space Complexity
+
+### Time Complexity:
+
+[
+O(n \log n)
+]
+
+* Sorting dominates
+
+### Space Complexity:
+
+[
+O(1)
+]
+
+---
+
+# 🔹 8. Difference: Fractional vs 0/1 Knapsack
+
+| Feature            | Fractional Knapsack | 0/1 Knapsack |
+| ------------------ | ------------------- | ------------ |
+| Item division      | Allowed             | Not allowed  |
+| Approach           | Greedy              | DP / B&B     |
+| Time complexity    | O(n log n)          | O(nW)        |
+| Optimal via greedy | Yes                 | No           |
+
+---
+
+# 🔹 9. Edge Cases
+
+* Capacity = 0 → value = 0
+* Weight = 0 → avoid division error
+* All items heavier → take fraction of best item
+
+---
+
+# 🔹 10. Applications
+
+* Resource allocation
+* Budget optimization
+* Cargo loading
+* Investment decisions
+
+---
+
+# 🔹 11. Key Viva Questions
+
+### Q1. Why use value/weight ratio?
+
+👉 To maximize value per unit weight
+
+### Q2. Why greedy works?
+
+👉 Because fractional selection ensures optimal choice
+
+### Q3. Time complexity?
+
+👉 O(n log n)
+
+### Q4. Difference from 0/1 knapsack?
+
+👉 Items can be divided
+
+---
+
+# 🔹 12. Key Points Summary
+
+* Sort by **value/weight ratio**
+* Take **full or fractional items**
+* Greedy ensures **optimal solution**
+* Efficient: **O(n log n)**
+
+---
+
+If you want next:
+
+* C++ version (important for exams)
+* Step count version
+* Common viva traps (very useful)
+
+
+

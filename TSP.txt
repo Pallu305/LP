@@ -1,0 +1,622 @@
+import heapq
+
+def tsp_branch_and_bound(cost_matrix):
+    n = len(cost_matrix)
+
+    # --- Matrix Reduction Function ---
+    def reduce_matrix(matrix):
+        mat = [row[:] for row in matrix]
+        reduction_cost = 0
+
+        # Row reduction
+        for i in range(n):
+            row_min = min(mat[i])
+            if row_min != float('inf') and row_min > 0:
+                reduction_cost += row_min
+                for j in range(n):
+                    if mat[i][j] != float('inf'):
+                        mat[i][j] -= row_min
+
+        # Column reduction
+        for j in range(n):
+            col = [mat[i][j] for i in range(n)]
+            col_min = min(col)
+            if col_min != float('inf') and col_min > 0:
+                reduction_cost += col_min
+                for i in range(n):
+                    if mat[i][j] != float('inf'):
+                        mat[i][j] -= col_min
+
+        return mat, reduction_cost
+
+    # Initial reduction
+    reduced_matrix, cost = reduce_matrix(cost_matrix)
+
+    # Priority Queue: (cost, level, current_node, path, matrix)
+    pq = []
+    heapq.heappush(pq, (cost, 0, 0, [0], reduced_matrix))
+
+    min_cost = float('inf')
+    best_path = []
+
+    while pq:
+        cost, level, current, path, matrix = heapq.heappop(pq)
+
+        # Prune
+        if cost >= min_cost:
+            continue
+
+        # If all cities visited
+        if level == n - 1:
+            final_cost = cost + cost_matrix[current][0]
+            if final_cost < min_cost:
+                min_cost = final_cost
+                best_path = path + [0]
+            continue
+
+        # Explore next cities
+        for next_city in range(n):
+            if next_city not in path and matrix[current][next_city] != float('inf'):
+
+                # Copy matrix
+                new_matrix = [row[:] for row in matrix]
+
+                # Set row and column to infinity
+                for k in range(n):
+                    new_matrix[current][k] = float('inf')
+                    new_matrix[k][next_city] = float('inf')
+
+                # Prevent early return to start
+                new_matrix[next_city][0] = float('inf')
+
+                # Reduce new matrix
+                reduced_new_matrix, reduction_cost = reduce_matrix(new_matrix)
+
+                new_cost = cost + matrix[current][next_city] + reduction_cost
+
+                if new_cost < min_cost:
+                    heapq.heappush(
+                        pq,
+                        (new_cost, level + 1, next_city, path + [next_city], reduced_new_matrix)
+                    )
+
+    return best_path, min_cost
+
+
+# --- Main Function ---
+if __name__ == "__main__":
+    inf = float('inf')
+
+    cost_matrix = [
+        [inf, 10, 15, 20],
+        [10, inf, 35, 25],
+        [15, 35, inf, 30],
+        [20, 25, 30, inf]
+    ]
+
+    path, cost = tsp_branch_and_bound(cost_matrix)
+
+    print("Minimum Cost:", cost)
+    print("Best Path:", path)
+
+
+
+
+
+
+Here is a **simple, structured explanation** of your **TSP using Branch and Bound code**:
+
+---
+
+# 🔷 1. What the Code Solves
+
+* Finds the **shortest route** that:
+
+  * Visits all cities once
+  * Returns to starting city
+
+👉 This is the **Travelling Salesman Problem (TSP)**
+
+---
+
+# 🔷 2. Core Idea: Branch and Bound
+
+### ✔ Branch
+
+* Try all possible paths (like a tree)
+
+### ✔ Bound
+
+* Calculate **minimum possible cost (lower bound)**
+* If path cost is already high → **stop exploring**
+
+👉 Saves time compared to brute force
+
+---
+
+# 🔷 3. Matrix Reduction (Most Important Concept)
+
+### Purpose:
+
+* Convert matrix → get **minimum guaranteed cost**
+
+---
+
+### 🔹 Row Reduction
+
+* Subtract smallest value in each row
+
+### 🔹 Column Reduction
+
+* Subtract smallest value in each column
+
+👉 Adds to **reduction cost (lower bound)**
+
+---
+
+# 🔷 4. Initial Step
+
+```python
+reduced_matrix, cost = reduce_matrix(cost_matrix)
+```
+
+* Creates first **lower bound**
+* Starts from city **0**
+
+---
+
+# 🔷 5. Priority Queue (Min-Heap)
+
+```python
+pq = [(cost, level, current, path, matrix)]
+```
+
+Stores:
+
+* **cost** → current estimated cost
+* **level** → number of cities visited
+* **path** → route so far
+
+👉 Always expands **minimum cost node first**
+
+---
+
+# 🔷 6. Main Loop
+
+```python
+while pq:
+```
+
+* Keep exploring best path first
+
+---
+
+# 🔷 7. Pruning (Optimization)
+
+```python
+if cost >= min_cost:
+    continue
+```
+
+👉 If path is already worse → skip
+
+---
+
+# 🔷 8. When All Cities Are Visited
+
+```python
+if level == n - 1:
+```
+
+* Add return to starting city
+* Update best cost
+
+---
+
+# 🔷 9. Branching (Exploring Next Cities)
+
+```python
+for next_city in range(n):
+```
+
+* Try all unvisited cities
+
+---
+
+### Important Steps:
+
+#### ✔ Prevent revisiting
+
+```python
+new_matrix[current][k] = inf
+new_matrix[k][next_city] = inf
+```
+
+#### ✔ Prevent early return
+
+```python
+new_matrix[next_city][0] = inf
+```
+
+---
+
+# 🔷 10. New Cost Calculation
+
+```python
+new_cost = cost + matrix[current][next_city] + reduction_cost
+```
+
+👉 Includes:
+
+* Current path cost
+* Reduction cost
+
+---
+
+# 🔷 11. Add to Queue
+
+```python
+heapq.heappush(...)
+```
+
+👉 Only if promising (low cost)
+
+---
+
+# 🔷 12. Final Output
+
+```python
+return best_path, min_cost
+```
+
+---
+
+# 🔷 13. Example Result
+
+```text
+Minimum Cost: 80
+Best Path: [0, 1, 3, 2, 0]
+```
+
+### Calculation:
+
+```text
+0 → 1 = 10  
+1 → 3 = 25  
+3 → 2 = 30  
+2 → 0 = 15  
+
+Total = 80
+```
+
+---
+
+# 🔷 🔥 Key Concepts (Very Important)
+
+* **Lower Bound** → estimated minimum cost
+* **Pruning** → skip bad paths
+* **Priority Queue** → choose best path first
+* **Matrix Reduction** → improves efficiency
+
+---
+
+# 🔷 14. Algorithm Flow
+
+```text
+Input Matrix
+   ↓
+Matrix Reduction
+   ↓
+Priority Queue
+   ↓
+Branch (explore paths)
+   ↓
+Bound (calculate cost)
+   ↓
+Prune bad paths
+   ↓
+Get Best Path
+```
+
+---
+
+# 🔷 Final Understanding
+
+👉 Instead of checking all routes, the algorithm:
+
+* **Smartly avoids useless paths**
+* Finds optimal solution faster
+
+Here is a **complete theory + concepts + exam-ready notes** for:
+
+# ✅ Travelling Salesman Problem (TSP) using Branch and Bound
+
+---
+
+# 🔷 1. Problem Definition
+
+The **Travelling Salesman Problem (TSP)** is:
+
+> Given a set of cities and distances between them, find the **shortest possible route** that:
+
+* Visits each city exactly once
+* Returns to the starting city
+
+---
+
+# 🔷 2. Mathematical Representation
+
+* Represented using a **cost matrix**
+* If there are `n` cities → matrix size = `n × n`
+
+[
+C[i][j] = \text{cost from city i to city j}
+]
+
+* Diagonal values = ∞ (no self-loop)
+
+---
+
+# 🔷 3. Types of TSP
+
+| Type       | Description        |
+| ---------- | ------------------ |
+| Symmetric  | Distance i→j = j→i |
+| Asymmetric | Distance differs   |
+
+👉 Your code solves **symmetric TSP**
+
+---
+
+# 🔷 4. Brute Force Approach
+
+* Try all permutations
+* Time complexity:
+
+[
+O(n!)
+]
+
+❌ Not efficient for large `n`
+
+---
+
+# 🔷 5. Branch and Bound Approach
+
+### ✔ Idea:
+
+* Reduce search space
+* Avoid unnecessary paths
+
+---
+
+## 🔹 Components
+
+### 1. Branching
+
+* Expanding nodes (trying next cities)
+
+### 2. Bounding
+
+* Calculate **lower bound cost**
+* If bound > best solution → prune
+
+### 3. Pruning
+
+* Stop exploring bad paths early
+
+---
+
+# 🔷 6. Lower Bound (Core Concept)
+
+👉 Lower bound = **minimum possible cost from current state**
+
+Used to:
+
+* Decide whether to explore a path
+
+---
+
+# 🔷 7. Matrix Reduction
+
+### Purpose:
+
+* Convert matrix → easier to estimate cost
+
+---
+
+## 🔹 Row Reduction
+
+[
+\text{Subtract minimum value from each row}
+]
+
+## 🔹 Column Reduction
+
+[
+\text{Subtract minimum value from each column}
+]
+
+---
+
+👉 Reduction cost = sum of all subtracted values
+👉 This becomes the **initial lower bound**
+
+---
+
+# 🔷 8. State Space Tree
+
+* Each node = partial path
+* Root = starting city
+* Leaves = complete tours
+
+---
+
+# 🔷 9. Algorithm Steps
+
+### Step 1: Input cost matrix
+
+### Step 2: Perform matrix reduction
+
+### Step 3: Initialize priority queue
+
+### Step 4: Repeat until queue empty:
+
+* Select node with minimum cost
+* If complete path → update solution
+* Else:
+
+  * Generate children (branching)
+  * Reduce matrix
+  * Compute new bound
+  * Add to queue if promising
+
+---
+
+# 🔷 10. Priority Queue Role
+
+* Stores nodes as:
+  [
+  (\text{cost}, \text{level}, \text{current node}, \text{path})
+  ]
+
+👉 Always expands **minimum cost node first**
+
+---
+
+# 🔷 11. Cost Calculation
+
+[
+\text{Total Cost} = \text{current cost} + \text{edge cost} + \text{reduction cost}
+]
+
+---
+
+# 🔷 12. Time Complexity
+
+* Worst case:
+  [
+  O(n!)
+  ]
+
+* But practically:
+  👉 Much faster due to pruning
+
+---
+
+# 🔷 13. Space Complexity
+
+[
+O(n^2)
+]
+
+* For storing matrices and nodes
+
+---
+
+# 🔷 14. Advantages
+
+✔ Faster than brute force
+✔ Guarantees optimal solution
+✔ Reduces unnecessary computations
+
+---
+
+# 🔷 15. Disadvantages
+
+❌ Complex implementation
+❌ Memory intensive
+❌ Still exponential in worst case
+
+---
+
+# 🔷 16. Example
+
+Cost Matrix:
+
+```
+   0   1   2   3
+0  ∞  10  15  20
+1 10   ∞  35  25
+2 15  35   ∞  30
+3 20  25  30   ∞
+```
+
+👉 Optimal Path:
+
+```
+0 → 1 → 3 → 2 → 0
+```
+
+👉 Minimum Cost:
+
+```
+80
+```
+
+---
+
+# 🔷 17. Key Terms (Very Important for Viva)
+
+* **Lower Bound** → minimum possible cost
+* **Upper Bound** → current best solution
+* **Pruning** → cutting useless paths
+* **State Space Tree** → all possible paths
+* **Reduction** → matrix simplification
+
+---
+
+# 🔷 18. Comparison with Other Methods
+
+| Method              | Complexity    | Optimal |
+| ------------------- | ------------- | ------- |
+| Brute Force         | O(n!)         | Yes     |
+| Dynamic Programming | O(n²·2ⁿ)      | Yes     |
+| Branch & Bound      | Reduced O(n!) | Yes     |
+
+---
+
+# 🔷 19. Real-Life Applications
+
+* Route optimization (delivery systems)
+* Logistics and supply chain
+* Circuit design (VLSI)
+* Robot path planning
+
+---
+
+# 🔷 20. Viva Questions (Important)
+
+### Q1: What is TSP?
+
+👉 Problem of finding shortest route visiting all cities once
+
+### Q2: What is Branch and Bound?
+
+👉 Optimization technique using bounding and pruning
+
+### Q3: What is lower bound?
+
+👉 Minimum possible cost from current state
+
+### Q4: Why matrix reduction?
+
+👉 To calculate lower bound efficiently
+
+### Q5: Why priority queue?
+
+👉 To expand minimum cost node first
+
+---
+
+# 🔷 🔥 Final Summary
+
+```text
+TSP → NP Hard Problem
+Branch & Bound → Efficient Optimization
+Matrix Reduction → Lower Bound Calculation
+Priority Queue → Best-first search
+Pruning → Reduces computation
+```
+
+

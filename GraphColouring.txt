@@ -1,0 +1,306 @@
+def is_safe(graph, color, c, v):
+    for i in range(len(graph)):
+        if graph[v][i] == 1 and color[i] == c:
+            return False
+    return True
+
+def graph_coloring_util(graph, m, color, v):
+    if v == len(graph):
+        return True
+
+    for c in range(1, m+1):
+        if is_safe(graph, color, c, v):
+            color[v] = c
+            if graph_coloring_util(graph, m, color, v + 1):
+                return True
+            color[v] = 0  # Backtrack
+    return False
+
+def graph_coloring(graph, m):
+    color = [0] * len(graph)
+    if not graph_coloring_util(graph, m, color, 0):
+        print("Solution does not exist.")
+        return False
+
+    print("Solution exists: Following are the assigned colors:")
+    for i in range(len(color)):
+        print(f"Vertex {i} ---> Color {color[i]}")
+    return True
+
+# Example usage:
+if __name__ == "__main__":
+    # Graph as adjacency matrix
+    graph = [
+        [0, 1, 1, 1],
+        [1, 0, 1, 0],
+        [1, 1, 0, 1],
+        [1, 0, 1, 0]
+    ]
+
+    m = 3  # Number of colors
+    graph_coloring(graph, m)
+
+
+
+
+
+
+
+
+Here is a **complete, structured explanation** of the **Graph Coloring Problem using Backtracking** based on your code.
+
+---
+
+# 🔹 1. Concept: Graph Coloring Problem
+
+👉 Given:
+
+* A graph with vertices and edges
+* `m` colors
+
+👉 Goal:
+
+* Assign colors to vertices such that:
+
+  * **No two adjacent vertices have the same color**
+
+---
+
+# 🔹 2. Representation
+
+✔ Graph is represented using an **Adjacency Matrix**
+
+Example:
+
+```text
+0 1 1 1
+1 0 1 0
+1 1 0 1
+1 0 1 0
+```
+
+👉 Meaning:
+
+* `graph[i][j] = 1` → edge exists
+* `graph[i][j] = 0` → no edge
+
+---
+
+# 🔹 3. Approach: Backtracking
+
+👉 Try assigning colors one by one:
+
+* If safe → assign
+* Else → try next color
+* If all fail → **backtrack**
+
+---
+
+# 🔹 4. Function Explanation
+
+---
+
+## ✅ 1. `is_safe(graph, color, c, v)`
+
+```python
+for i in range(len(graph)):
+    if graph[v][i] == 1 and color[i] == c:
+        return False
+```
+
+👉 Checks:
+
+* If adjacent vertex already has same color → not safe
+
+✔ Returns:
+
+* `True` → safe
+* `False` → not safe
+
+---
+
+## ✅ 2. `graph_coloring_util(graph, m, color, v)`
+
+👉 Recursive function
+
+```python
+if v == len(graph):
+    return True
+```
+
+✔ All vertices colored successfully
+
+---
+
+```python
+for c in range(1, m+1):
+```
+
+✔ Try all colors
+
+---
+
+```python
+if is_safe(graph, color, c, v):
+```
+
+✔ Check if color can be assigned
+
+---
+
+```python
+color[v] = c
+```
+
+✔ Assign color
+
+---
+
+```python
+if graph_coloring_util(graph, m, color, v + 1):
+    return True
+```
+
+✔ Move to next vertex
+
+---
+
+```python
+color[v] = 0
+```
+
+✔ Backtrack if needed
+
+---
+
+## ✅ 3. `graph_coloring(graph, m)`
+
+* Initializes color array
+* Calls recursive function
+* Prints result
+
+---
+
+# 🔹 5. Example (Dry Run)
+
+### Input:
+
+```text
+Vertices = 4
+Colors = 3
+```
+
+Graph:
+
+```text
+0 -- 1
+|  / |
+2 -- 3
+```
+
+---
+
+### Output:
+
+```text
+Vertex 0 ---> Color 1
+Vertex 1 ---> Color 2
+Vertex 2 ---> Color 3
+Vertex 3 ---> Color 2
+```
+
+---
+
+# 🔹 6. Working Idea
+
+1. Start from vertex 0
+2. Assign first possible color
+3. Move to next vertex
+4. If conflict → try next color
+5. If no color works → backtrack
+
+---
+
+# 🔹 7. Time Complexity
+
+[
+O(m^n)
+]
+
+* `n` = vertices
+* `m` = colors
+
+---
+
+# 🔹 8. Space Complexity
+
+[
+O(n)
+]
+
+* For color array + recursion stack
+
+---
+
+# 🔹 9. Key Points
+
+✔ Uses **backtracking**
+✔ One vertex at a time
+✔ Ensures no adjacent same color
+✔ Stops at first valid solution
+
+---
+
+# 🔹 10. Edge Cases
+
+* `m < required colors` → no solution
+* Fully connected graph → needs `n` colors
+* No edges → only 1 color needed
+
+---
+
+# 🔹 11. Applications
+
+* Map coloring
+* Register allocation (compiler design)
+* Scheduling problems
+* Frequency assignment
+
+---
+
+# 🔹 12. Key Viva Questions
+
+### Q1. What is graph coloring?
+
+👉 Assign colors so adjacent vertices differ
+
+### Q2. Why backtracking?
+
+👉 To try all possibilities and undo wrong ones
+
+### Q3. Time complexity?
+
+👉 O(m^n)
+
+### Q4. What if m is small?
+
+👉 May not find solution
+
+---
+
+# 🔹 13. Short Summary
+
+* Assign colors to vertices
+* Check safety before assigning
+* Use recursion + backtracking
+* Stop when valid coloring found
+
+---
+
+If you want next:
+
+* User input version
+* All possible colorings (not just one)
+* C++ version for exam 👍
+
+

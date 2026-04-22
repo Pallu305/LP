@@ -1,0 +1,212 @@
+def fibonacci_with_step_count(n):
+    a, b = 0, 1
+    
+    for _ in range(max(0, n)):
+        a, b = b, a + b
+    
+    # Steps are always 1 for n <= 1, and n + 1 for anything greater
+    return a, 1 if n <= 1 else n + 1
+
+
+if __name__ == "__main__":
+    n = int(input("Enter the value of n for Fibonacci: "))
+    
+    fib_number, steps = fibonacci_with_step_count(n)
+    
+    print(f"Fibonacci({n}) = {fib_number}")
+    print(f"Total steps required: {steps}")
+
+
+Here is a **complete, structured explanation** of the topic and your code.
+
+---
+
+# 🔹 1. Concept: Fibonacci Sequence
+
+The **Fibonacci sequence** is a series where each number is the sum of the previous two.
+
+Sequence:
+
+```
+0, 1, 1, 2, 3, 5, 8, 13, ...
+```
+
+Mathematical definition:
+[
+F(n) = F(n-1) + F(n-2)
+]
+with:
+[
+F(0)=0,; F(1)=1
+]
+
+---
+
+# 🔹 2. Iterative Approach (Used in Your Code)
+
+Instead of recursion, your code uses a **loop (iteration)**.
+
+### Idea:
+
+* Keep two variables:
+
+  * `a` → current Fibonacci number
+  * `b` → next Fibonacci number
+* Update them in each iteration
+
+### Transition:
+
+```
+a, b = b, a + b
+```
+
+---
+
+# 🔹 3. Step Count Concept
+
+Step count measures **how many operations/iterations** are performed.
+
+In your logic:
+
+* If `n ≤ 1` → steps = 1
+* If `n > 1` → steps = n + 1
+
+👉 Why `n + 1`?
+
+* Loop runs `n` times
+* +1 accounts for initialization / final step
+
+---
+
+# 🔹 4. Code Explanation (Line by Line)
+
+```python
+def fibonacci_with_step_count(n):
+```
+
+* Function to compute Fibonacci number and steps
+
+```python
+a, b = 0, 1
+```
+
+* Initialize first two Fibonacci numbers
+
+```python
+for _ in range(max(0, n)):
+```
+
+* Loop runs `n` times
+* `max(0, n)` avoids negative loops
+
+```python
+a, b = b, a + b
+```
+
+* Update values:
+
+  * `a` becomes next number
+  * `b` becomes sum
+
+```python
+return a, 1 if n <= 1 else n + 1
+```
+
+* Returns:
+
+  * Fibonacci value
+  * Step count
+
+---
+
+# 🔹 5. Example Dry Run
+
+### Input:
+
+```
+n = 5
+```
+
+### Iterations:
+
+| Iteration | a | b |
+| --------- | - | - |
+| Start     | 0 | 1 |
+| 1         | 1 | 1 |
+| 2         | 1 | 2 |
+| 3         | 2 | 3 |
+| 4         | 3 | 5 |
+| 5         | 5 | 8 |
+
+👉 Output:
+
+```
+Fibonacci(5) = 5
+Steps = 6
+```
+
+---
+
+# 🔹 6. Time and Space Complexity
+
+### Time Complexity:
+
+[
+O(n)
+]
+
+* Loop runs `n` times
+
+### Space Complexity:
+
+[
+O(1)
+]
+
+* Only two variables used
+
+---
+
+# 🔹 7. Why Iterative is Better than Recursive
+
+| Method    | Time   | Space |
+| --------- | ------ | ----- |
+| Recursive | O(2^n) | O(n)  |
+| Iterative | O(n)   | O(1)  |
+
+👉 Your method is **efficient and optimized**
+
+---
+
+# 🔹 8. Edge Cases
+
+* `n = 0` → Output: 0
+* `n = 1` → Output: 1
+* `n < 0` → Handled using `max(0, n)`
+
+---
+
+# 🔹 9. Applications of Fibonacci
+
+* Dynamic Programming problems
+* Algorithm analysis
+* Nature patterns (spirals, plants)
+* Data structures (heaps, trees)
+
+---
+
+# 🔹 10. Key Points for Viva
+
+* Fibonacci = sum of previous two numbers
+* Iterative approach is more efficient
+* Step count ≈ number of loop iterations
+* Time complexity = **O(n)**
+* Space complexity = **O(1)**
+
+---
+
+If you want, I can also give:
+
+* Recursive version with step count
+* C++ version (as per your syllabus)
+* Short viva answers (1–2 lines)

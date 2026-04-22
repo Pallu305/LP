@@ -1,0 +1,282 @@
+def knapsack_dp(weights, values, capacity):
+    n = len(values)  # Number of items
+    dp = [[0] * (capacity + 1) for _ in range(n + 1)]
+
+    # Build the DP table
+    for i in range(1, n + 1):
+        for w in range(1, capacity + 1):
+            if weights[i - 1] <= w:
+                dp[i][w] = max(
+                    dp[i - 1][w],
+                    values[i - 1] + dp[i - 1][w - weights[i - 1]]
+                )
+            else:
+                dp[i][w] = dp[i - 1][w]
+
+    return dp[n][capacity]
+
+
+if __name__ == "__main__":
+    values = []
+    weights = []
+
+    n = int(input("Enter number of items: "))
+
+    for i in range(n):
+        print(f"\nEnter details for Item {i+1}")
+        v = int(input("Value: "))
+        w = int(input("Weight: "))
+        
+        values.append(v)
+        weights.append(w)
+
+    capacity = int(input("\nEnter knapsack capacity: "))
+
+    max_value = knapsack_dp(weights, values, capacity)
+
+    print("\n--- Result ---")
+    print("Maximum value in the knapsack (DP):", max_value)
+
+
+
+
+Here is a **complete, structured explanation** of the **0/1 Knapsack using Dynamic Programming (DP)** for your code.
+
+---
+
+# 🔹 1. Concept: 0/1 Knapsack Problem
+
+You are given:
+
+* `n` items
+* Each item has:
+
+  * **Value (v)**
+  * **Weight (w)**
+* A knapsack with **capacity (W)**
+
+👉 Goal:
+**Maximize total value without exceeding capacity**
+
+---
+
+# 🔹 2. Why “0/1”?
+
+* **0** → item not selected
+* **1** → item selected
+
+👉 You **cannot take fractions** (unlike fractional knapsack)
+
+---
+
+# 🔹 3. Why Dynamic Programming?
+
+Greedy fails here ❌
+So we use **DP** because:
+
+* Problem has **overlapping subproblems**
+* Has **optimal substructure**
+
+---
+
+# 🔹 4. DP Idea
+
+We build a table:
+
+```text
+dp[i][w]
+```
+
+👉 Meaning:
+
+* Maximum value using **first i items**
+* With capacity **w**
+
+---
+
+# 🔹 5. Recurrence Relation
+
+Use this core formula:
+
+dp[i][w] = \max(dp[i-1][w],\ v_i + dp[i-1][w-w_i])
+
+👉 Conditions:
+
+* If `weight[i-1] ≤ w` → choose max of:
+
+  * Not taking item
+  * Taking item
+* Else:
+  [
+  dp[i][w] = dp[i-1][w]
+  ]
+
+---
+
+# 🔹 6. Code Explanation (Step-by-Step)
+
+```python
+dp = [[0] * (capacity + 1) for _ in range(n + 1)]
+```
+
+* Create DP table of size `(n+1) × (capacity+1)`
+
+---
+
+```python
+for i in range(1, n + 1):
+```
+
+* Loop through items
+
+```python
+for w in range(1, capacity + 1):
+```
+
+* Loop through capacities
+
+---
+
+```python
+if weights[i - 1] <= w:
+```
+
+* Check if item can fit
+
+---
+
+```python
+dp[i][w] = max(
+    dp[i - 1][w],
+    values[i - 1] + dp[i - 1][w - weights[i - 1]]
+)
+```
+
+* Choose best option
+
+---
+
+```python
+else:
+    dp[i][w] = dp[i - 1][w]
+```
+
+* Cannot include item
+
+---
+
+# 🔹 7. Example (Dry Run)
+
+### Input:
+
+```text
+Values  = [60, 100, 120]
+Weights = [10, 20, 30]
+Capacity = 50
+```
+
+---
+
+### Final DP Table (Simplified)
+
+| i\w | 0 | 10 | 20  | 30  | 40  | 50  |
+| --- | - | -- | --- | --- | --- | --- |
+| 0   | 0 | 0  | 0   | 0   | 0   | 0   |
+| 1   | 0 | 60 | 60  | 60  | 60  | 60  |
+| 2   | 0 | 60 | 100 | 160 | 160 | 160 |
+| 3   | 0 | 60 | 100 | 160 | 180 | 220 |
+
+---
+
+### Output:
+
+```text
+Maximum value = 220
+```
+
+👉 Items selected:
+
+* Item 2 (100,20)
+* Item 3 (120,30)
+
+---
+
+# 🔹 8. Time and Space Complexity
+
+### Time Complexity:
+
+[
+O(n \times W)
+]
+
+### Space Complexity:
+
+[
+O(n \times W)
+]
+
+---
+
+# 🔹 9. Key Differences
+
+| Feature           | Fractional | 0/1 Knapsack |
+| ----------------- | ---------- | ------------ |
+| Item division     | Yes        | No           |
+| Approach          | Greedy     | DP           |
+| Optimal by greedy | Yes        | No           |
+| Complexity        | O(n log n) | O(nW)        |
+
+---
+
+# 🔹 10. Important Points
+
+✔ DP table stores intermediate results
+✔ Avoids recomputation
+✔ Gives **optimal solution always**
+✔ Works when greedy fails
+
+---
+
+# 🔹 11. Edge Cases
+
+* Capacity = 0 → output = 0
+* No items → output = 0
+* All weights > capacity → output = 0
+
+---
+
+# 🔹 12. Key Viva Questions
+
+### Q1. Why DP is used?
+
+👉 Greedy does not give optimal solution
+
+### Q2. What does dp[i][w] represent?
+
+👉 Max value using first i items and capacity w
+
+### Q3. Time complexity?
+
+👉 O(n × W)
+
+### Q4. Can we optimize space?
+
+👉 Yes → using 1D array
+
+---
+
+# 🔹 13. Short Summary
+
+* 0/1 knapsack → no fractions
+* Use DP table
+* Apply recurrence relation
+* Build solution step-by-step
+* Final answer → `dp[n][capacity]`
+
+---
+
+If you want next:
+
+* Space optimized DP (1D array)
+* C++ version (important for exam)
+* Backtracking to find selected items 👍

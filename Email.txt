@@ -1,0 +1,406 @@
+import numpy as np
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.svm import SVC
+from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
+from sklearn.preprocessing import StandardScaler
+import warnings
+warnings.filterwarnings('ignore')
+
+
+
+
+
+
+df = pd.read_csv("emails.csv")
+
+print("=" * 60)
+print("       EMAIL SPAM DATASET - OVERVIEW")
+print("=" * 60)
+print(f"Total Emails    : {len(df)}")
+print(f"Total Features  : {df.shape[1] - 2}")
+print(f"Not Spam (0)    : {(df['Prediction'] == 0).sum()}")
+print(f"Spam     (1)    : {(df['Prediction'] == 1).sum()}")
+print(f"Missing Values  : {df.isnull().sum().sum()}")
+
+
+
+
+
+
+# --- Prepare Features ---
+# Dropping non-predictive columns and defining target
+X = df.drop(['Email No.', 'Prediction'], axis=1)
+y = df['Prediction']
+
+# Feature Scaling
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X)
+
+# Train Test Split
+X_train, X_test, y_train, y_test = train_test_split(
+    X_scaled, y, test_size=0.2, random_state=42)
+
+print(f"\nTraining samples : {len(X_train)}")
+print(f"Testing samples  : {len(X_test)}")
+
+
+
+Training samples : 4137
+Testing samples  : 1035
+
+
+
+
+# --- KNN Classifier ---
+print("\n" + "=" * 60)
+print("       KNN CLASSIFIER (K=5) - TRAINING...")
+print("=" * 60)
+
+knn = KNeighborsClassifier(n_neighbors=5)
+knn.fit(X_train, y_train)
+y_pred_knn = knn.predict(X_test)
+
+cm_knn = confusion_matrix(y_test, y_pred_knn)
+acc_knn = accuracy_score(y_test, y_pred_knn)
+
+print("Confusion Matrix:")
+print(f"{'':25} Predicted: Not Spam   Predicted: Spam")
+print(f"{'Actual: Not Spam':<25} {cm_knn[0][0]:<23} {cm_knn[0][1]}")
+print(f"{'Actual: Spam':<25} {cm_knn[1][0]:<23} {cm_knn[1][1]}")
+print(f"\nAccuracy : {acc_knn*100:.2f}%")
+print("\nClassification Report:")
+print(classification_report(y_test, y_pred_knn, target_names=['Not Spam', 'Spam']))
+
+
+
+
+============================================================
+       KNN CLASSIFIER (K=5) - TRAINING...
+============================================================
+Confusion Matrix:
+                          Predicted: Not Spam   Predicted: Spam
+Actual: Not Spam          583                     156
+Actual: Spam              16                      280
+
+Accuracy : 83.38%
+
+Classification Report:
+              precision    recall  f1-score   support
+
+    Not Spam       0.97      0.79      0.87       739
+        Spam       0.64      0.95      0.77       296
+
+    accuracy                           0.83      1035
+   macro avg       0.81      0.87      0.82      1035
+weighted avg       0.88      0.83      0.84      1035
+
+
+
+
+# --- SVM Classifier ---
+print("=" * 60)
+print("       SVM CLASSIFIER (RBF Kernel) - TRAINING...")
+print("=" * 60)
+
+svm = SVC(kernel='rbf', random_state=42)
+svm.fit(X_train, y_train)
+y_pred_svm = svm.predict(X_test)
+
+cm_svm = confusion_matrix(y_test, y_pred_svm)
+acc_svm = accuracy_score(y_test, y_pred_svm)
+
+print("Confusion Matrix:")
+print(f"{'':25} Predicted: Not Spam   Predicted: Spam")
+print(f"{'Actual: Not Spam':<25} {cm_svm[0][0]:<23} {cm_svm[0][1]}")
+print(f"{'Actual: Spam':<25} {cm_svm[1][0]:<23} {cm_svm[1][1]}")
+print(f"\nAccuracy : {acc_svm*100:.2f}%")
+print("\nClassification Report:")
+print(classification_report(y_test, y_pred_svm, target_names=['Not Spam', 'Spam']))
+
+
+    SVM CLASSIFIER (RBF Kernel) - TRAINING...
+============================================================
+Confusion Matrix:
+                          Predicted: Not Spam   Predicted: Spam
+Actual: Not Spam          738                     1
+Actual: Spam              54                      242
+
+Accuracy : 94.69%
+
+Classification Report:
+              precision    recall  f1-score   support
+
+    Not Spam       0.93      1.00      0.96       739
+        Spam       1.00      0.82      0.90       296
+
+    accuracy                           0.95      1035
+
+
+# --- Comparison ---
+print("=" * 60)
+print("            FINAL MODEL COMPARISON")
+print("=" * 60)
+print(f"{'Model':<25} {'Accuracy':>12} {'Better?':>10}")
+print("-" * 50)
+print(f"{'KNN (K=5)':<25} {acc_knn*100:>11.2f}%")
+print(f"{'SVM (RBF Kernel)':<25} {acc_svm*100:>11.2f}%          ✓")
+print("-" * 50)
+print(f"\nConclusion : SVM performs better for Email Spam Detection")
+print("=" * 60)
+
+
+      FINAL MODEL COMPARISON
+============================================================
+Model                         Accuracy    Better?
+--------------------------------------------------
+KNN (K=5)                       83.38%
+SVM (RBF Kernel)                94.69%          ✓
+--------------------------------------------------
+
+Conclusion : SVM performs better for Email Spam Detection
+
+
+
+'''Practical 5 — Email Spam Detection (KNN + SVM)
+Theory: This is a binary classification task — classifying emails as 
+Spam (1) or Not Spam (0). 
+KNN (K-Nearest Neighbors) classifies a new point by majority vote 
+among its K closest training points (K=5 used). 
+SVM (Support Vector Machine) finds a hyperplane that maximally separates 
+the two classes; the RBF kernel handles non-linear boundaries. 
+Feature scaling is essential since both algorithms are distance-sensitive.
+
+Algorithm (Step-by-step):
+1. Load emails.csv (5172 emails, 3000 word-frequency features, label = Prediction)
+2. Drop Email No. column; separate features X and target y
+3. StandardScaler: normalize all features to zero mean, unit variance
+4. Split 80/20 train-test (4137 train / 1035 test)
+5. KNN: fit with K=5, classify each test email by majority vote of 5 nearest training emails → 83.38% accuracy
+6. SVM: fit with RBF kernel (handles non-linear separation), predict on test → 94.69% accuracy
+7. Compute confusion matrix, precision, recall, F1 for both models
+8. Conclusion: SVM outperforms KNN because high-dimensional word-frequency data has a non-linear boundary that the RBF kernel handles well
+'''  
+
+Here is a **clear, step-by-step explanation** of your Email Spam Detection code:
+
+---
+
+# 🔷 1. Problem Type
+
+* This is a **Binary Classification problem**:
+
+  * **0 → Not Spam**
+  * **1 → Spam**
+
+---
+
+# 🔷 2. Dataset Overview
+
+```python
+df = pd.read_csv("emails.csv")
+```
+
+* Dataset contains:
+
+  * ~5172 emails
+  * ~3000 features (word frequencies)
+  * Target column → `Prediction`
+
+```text
+Not Spam (0) : 739  
+Spam (1)     : 296  
+```
+
+✔ No missing values → clean dataset
+
+---
+
+# 🔷 3. Feature & Target Separation
+
+```python
+X = df.drop(['Email No.', 'Prediction'], axis=1)
+y = df['Prediction']
+```
+
+* `X` → input features (word frequencies)
+* `y` → output (Spam / Not Spam)
+
+---
+
+# 🔷 4. Feature Scaling (VERY IMPORTANT)
+
+```python
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X)
+```
+
+### Why?
+
+* KNN & SVM depend on **distance**
+* Features must be on same scale
+
+👉 Converts:
+
+* Mean = 0
+* Std Dev = 1
+
+---
+
+# 🔷 5. Train-Test Split
+
+```python
+train_test_split(test_size=0.2)
+```
+
+* Training: 4137 samples
+* Testing: 1035 samples
+
+✔ Model learns on training, tested on unseen data
+
+---
+
+# 🔷 6. KNN Classifier
+
+```python
+knn = KNeighborsClassifier(n_neighbors=5)
+```
+
+### Concept:
+
+* Finds **5 nearest neighbors**
+* Uses **majority voting**
+
+👉 Example:
+If neighbors = [Spam, Spam, Not Spam, Spam, Not Spam]
+→ Output = **Spam**
+
+---
+
+### 📊 KNN Results
+
+* Accuracy: **83.38%**
+
+Confusion Matrix:
+
+```
+Not Spam → correctly: 583
+Spam → correctly: 280
+```
+
+👉 Problem:
+
+* Many **false positives** (156 emails wrongly marked spam)
+
+---
+
+# 🔷 7. SVM Classifier
+
+```python
+svm = SVC(kernel='rbf')
+```
+
+### Concept:
+
+* Finds **optimal boundary (hyperplane)**
+* RBF kernel handles **non-linear separation**
+
+👉 Works well for complex, high-dimensional data
+
+---
+
+### 📊 SVM Results
+
+* Accuracy: **94.69%**
+
+Confusion Matrix:
+
+```
+Not Spam → 738 correct (almost perfect)
+Spam → 242 correct
+```
+
+✔ Very few mistakes
+
+---
+
+# 🔷 8. Evaluation Metrics
+
+### ✔ Accuracy
+
+[
+\text{Accuracy} = \frac{Correct}{Total}
+]
+
+### ✔ Precision
+
+* Out of predicted spam → how many are correct
+
+### ✔ Recall
+
+* Out of actual spam → how many detected
+
+### ✔ F1 Score
+
+* Balance of precision & recall
+
+---
+
+# 🔷 9. Final Comparison
+
+| Model | Accuracy |
+| ----- | -------- |
+| KNN   | 83.38%   |
+| SVM   | 94.69% ✅ |
+
+👉 **Best Model: SVM**
+
+---
+
+# 🔷 10. Why SVM is Better?
+
+✔ Handles:
+
+* High-dimensional data (3000 features)
+* Non-linear patterns
+
+❌ KNN issues:
+
+* Sensitive to noise
+* Slow with large data
+* Struggles in high dimensions
+
+---
+
+# 🔷 🔥 Complete Flow
+
+```text
+Dataset → Cleaning → Scaling → Split → Train Models → Evaluate → Compare
+```
+
+---
+
+# 🔷 11. Key Concepts (Viva Ready)
+
+* **KNN** → Distance-based, lazy learning
+* **SVM** → Margin maximization, powerful classifier
+* **Scaling** → Mandatory for distance-based models
+* **Confusion Matrix** → Error analysis tool
+
+---
+
+# 🔷 Final Conclusion
+
+👉 Your system successfully detects spam emails
+👉 **SVM gives highest accuracy (94.69%)**, so it is the best choice
+
+---
+
+If you want, I can also give:
+✅ Viva questions + answers
+✅ Diagram/flowchart
+✅ Short notes for exam writing
+
+
+
