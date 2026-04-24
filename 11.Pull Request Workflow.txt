@@ -1,0 +1,242 @@
+Got it—you want the **Pull Request workflow starting from zero (no repo exists)**.
+Follow this clean flow from scratch.
+
+---
+
+# 🧪 **Pull Request Workflow from Scratch**
+
+---
+
+# 🎯 Aim
+
+To create a repository, make changes using branches, and demonstrate Pull Request workflow using Git and GitHub.
+
+---
+
+# 📘 Core Concept Flow
+
+```text id="b2f6w6"
+Create Repo → Clone → Branch → Commit → Push → Pull Request → Merge
+```
+
+---
+
+# ⚙️ Step-by-Step Procedure
+
+---
+
+## 🔹 Step 1: Create Repository on GitHub
+
+1. Open GitHub
+2. Click **New Repository**
+3. Name: `pr-demo`
+4. Click **Create Repository**
+
+---
+
+### ✔️ Expected Output
+
+* Empty repository page with URL
+
+---
+
+## 🔹 Step 2: Clone Repository to Local System
+
+Copy repo URL and run:
+
+```cmd id="lm0b2m"
+git clone https://github.com/your-username/pr-demo.git
+cd pr-demo
+```
+
+---
+
+### ✔️ Expected Output
+
+```text id="ojl5p8"
+Cloning into 'pr-demo'...
+```
+
+---
+
+## 🔹 Step 3: Create Initial File
+
+```cmd id="cy6hzv"
+echo Hello PR Workflow > file.txt
+```
+
+---
+
+## 🔹 Step 4: Add and Commit
+
+```cmd id="wht9wg"
+git add file.txt
+git commit -m "Initial commit"
+```
+
+---
+
+## 🔹 Step 5: Push to GitHub
+
+```cmd id="qf6y47"
+git push origin main
+```
+
+---
+
+### ✔️ Expected Output
+
+* File appears on GitHub
+
+---
+
+# 🌿 Branch + Pull Request
+
+---
+
+## 🔹 Step 6: Create New Branch
+
+```cmd id="gxf03m"
+git checkout -b feature-branch
+```
+
+---
+
+### ✔️ Expected Output
+
+```text id="j6tyr5"
+Switched to a new branch 'feature-branch'
+```
+
+---
+
+## 🔹 Step 7: Modify File
+
+```cmd id="u6x88h"
+echo Added new feature >> file.txt
+```
+
+---
+
+## 🔹 Step 8: Commit Changes
+
+```cmd id="8p6r39"
+git add file.txt
+git commit -m "Added feature change"
+```
+
+---
+
+## 🔹 Step 9: Push Branch
+
+```cmd id="8chm6p"
+git push origin feature-branch
+```
+
+---
+
+### ✔️ Expected Output
+
+```text id="y35jy7"
+[new branch] feature-branch -> feature-branch
+```
+
+---
+
+## 🔹 Step 10: Create Pull Request
+
+1. Open repo on GitHub
+2. Click **Compare & pull request**
+3. Add:
+
+   * Title: `Feature Update`
+4. Click **Create Pull Request**
+
+---
+
+### ✔️ Expected Output
+
+* PR page showing file changes
+
+---
+
+## 🔹 Step 11: Merge Pull Request
+
+1. Click **Merge Pull Request**
+2. Click **Confirm Merge**
+
+---
+
+### ✔️ Expected Output
+
+```text id="2awnbu"
+Pull request successfully merged
+```
+
+---
+
+## 🔹 Step 12: Update Local Repository
+
+```cmd id="l9szfc"
+git checkout main
+git pull origin main
+```
+
+---
+
+### ✔️ Expected Output
+
+* Latest changes downloaded
+
+---
+
+# 📊 Final Result
+
+* Repository created ✔️
+* File added ✔️
+* Branch created ✔️
+* Changes committed ✔️
+* Pull request created ✔️
+* Changes merged ✔️
+
+---
+
+# 🧠 Key Concepts
+
+### 🔹 Pull Request
+
+* Used for collaboration
+* Enables review before merge
+
+### 🔹 Branching
+
+* Allows independent development
+
+### 🔹 Clone
+
+* Creates local copy of remote repo
+
+---
+
+# ❓ Viva Questions
+
+**Q1. What is cloning?**
+→ Copying repo from GitHub to local
+
+**Q2. What is Pull Request?**
+→ Request to merge code
+
+**Q3. Why use branches?**
+→ To work independently
+
+---
+
+# 🎯 Conclusion
+
+Pull Request workflow ensures **safe, structured, and collaborative development** from scratch.
+
+---
+
+If you want next:
+👉 Cloning + pushing practical
+👉 OR advanced Git (rebase, stash, etc.)

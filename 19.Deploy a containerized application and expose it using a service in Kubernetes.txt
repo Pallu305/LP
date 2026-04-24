@@ -1,0 +1,209 @@
+Here is **Practical 19 (complete, exam-ready + clear steps + detailed understanding + expected output)** 👇
+
+---
+
+# 🔷 Practical 19
+
+## **Deploy a containerized application and expose it using a service in Kubernetes**
+
+---
+
+# 🔹 Aim
+
+To deploy a containerized application using Kubernetes and expose it using a service.
+
+---
+
+# 🔹 Theory
+
+### 🔸 Deployment
+
+* Used to run application in pods
+* Maintains desired number of pods
+
+---
+
+### 🔸 Service
+
+* Exposes application to outside world
+* Provides stable access point
+
+---
+
+### 🔸 NodePort
+
+* Opens a port on the system to access app
+
+---
+
+# 🔹 Requirements
+
+* Kubernetes enabled
+* kubectl installed
+
+---
+
+# 🔹 Execution Steps
+
+## 🔷 Step 1: Create Folder
+
+```bash id="q7k1p9"
+mkdir k8s-final-demo
+cd k8s-final-demo
+```
+
+---
+
+## 🔷 Step 2: Create Deployment
+
+```bash id="ex4w2y"
+kubectl create deployment final-app --image=nginx
+```
+
+### ✅ Expected Output:
+
+```bash id="6i3v0a"
+deployment.apps/final-app created
+```
+
+---
+
+## 🔷 Step 3: Verify Pods
+
+```bash id="n9o1lm"
+kubectl get pods
+```
+
+### ✅ Expected Output:
+
+```bash id="o4p7ru"
+final-app-xxxxx-xxxxx   1/1   Running
+```
+
+---
+
+## 🔷 Step 4: Expose Deployment (Create Service)
+
+```bash id="8d2h7k"
+kubectl expose deployment final-app --type=NodePort --port=80
+```
+
+### ✅ Expected Output:
+
+```bash id="0zj4fe"
+service/final-app exposed
+```
+
+---
+
+## 🔷 Step 5: Verify Service
+
+```bash id="c2l6wq"
+kubectl get services
+```
+
+### ✅ Expected Output:
+
+```bash id="l1q0ns"
+NAME        TYPE       CLUSTER-IP     PORT(S)
+final-app   NodePort   10.x.x.x       80:3xxxx/TCP
+```
+
+---
+
+## 🔷 Step 6: Access Application (Port 8081)
+
+```bash id="r3g8bv"
+kubectl port-forward service/final-app 8081:80
+```
+
+### ✅ Expected Output:
+
+```bash id="y5n2dc"
+Forwarding from 127.0.0.1:8081 -> 80
+```
+
+---
+
+## 🔷 Step 7: Open Browser
+
+```text id="q8m6pz"
+http://localhost:8081
+```
+
+👉 You will see:
+✔ **Nginx Welcome Page**
+
+---
+
+# 🔹 Output
+
+* Deployment created successfully
+* Pod running
+* Service created
+* Application accessible in browser
+
+---
+
+# 🔹 Working Explanation
+
+1. Deployment creates pod with nginx container
+2. Pod runs inside cluster
+3. Service connects pod to outside world
+4. Port-forward maps local port to service
+5. Browser displays application
+
+---
+
+# 🔹 Difference from Practical 4 (Important for Viva)
+
+| Practical 4               | Practical 19                   |
+| ------------------------- | ------------------------------ |
+| Basic deployment + expose | Full deployment + verification |
+| Focus on creation         | Focus on complete flow         |
+| Less explanation          | More real-world usage          |
+
+---
+
+# 🔹 Conclusion
+
+A containerized application was successfully deployed using Kubernetes and exposed using a service, and the application was accessed through a browser.
+
+---
+
+# 🔹 Viva Questions
+
+### Q1: What is deployment?
+
+👉 Manages pods
+
+### Q2: What is service?
+
+👉 Exposes application
+
+### Q3: What is NodePort?
+
+👉 Opens port for external access
+
+### Q4: How to access app?
+
+👉 Using port-forward or NodePort
+
+### Q5: Difference between pod and deployment?
+
+* Pod → runs container
+* Deployment → manages pods
+
+---
+
+# 🔹 Memory Shortcut
+
+👉 **Flow:**
+
+* Deploy → Verify → Expose → Access
+
+---
+
+If you want, I can now:
+✔ Combine **ALL Docker + Kubernetes practicals into one final file (ready submission)**
+✔ OR give **common viva questions (very high scoring)**

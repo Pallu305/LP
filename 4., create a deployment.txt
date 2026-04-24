@@ -1,0 +1,156 @@
+🔷 Practical 4
+Using Kubernetes, create a deployment and expose it using a service
+🔹 Aim
+
+To create a Kubernetes deployment and expose it using a service.
+
+🔹 Theory
+🔸 Kubernetes
+Kubernetes is a platform to manage containerized applications.
+It automates deployment, scaling, and monitoring.
+🔸 Deployment
+A deployment manages a set of pods.
+Ensures desired number of pods are running.
+Supports updates and scaling.
+🔸 Pod
+Smallest unit in Kubernetes
+Contains one or more containers
+🔸 Service
+Exposes pods to the outside world
+Provides stable IP and port
+🔸 NodePort
+Makes application accessible using a port on the system
+🔹 Requirements
+Docker Desktop with Kubernetes enabled
+kubectl installed
+
+# ✅ Practical 4 (Fresh Start + Correct + With Output)
+
+Follow exactly 👇
+
+---
+
+# 🔷 Step 1: Create Folder
+
+```bash
+mkdir k8s-service-demo2
+cd k8s-service-demo2
+```
+
+---
+
+# 🔷 Step 2: Create Deployment
+
+```bash
+kubectl create deployment demo-app2 --image=nginx
+```
+
+### ✅ Expected Output:
+
+```bash
+deployment.apps/demo-app2 created
+```
+
+---
+
+# 🔷 Step 3: Check Deployment
+
+```bash
+kubectl get deployments
+```
+
+### ✅ Expected Output:
+
+```bash
+NAME        READY   UP-TO-DATE   AVAILABLE
+demo-app2   1/1     1            1
+```
+
+---
+
+# 🔷 Step 4: Check Pods
+
+```bash
+kubectl get pods
+```
+
+### ✅ Expected Output:
+
+```bash
+NAME                         READY   STATUS    RESTARTS
+demo-app2-xxxxx-xxxxx        1/1     Running   0
+```
+
+👉 If not Running → wait few seconds
+
+---
+
+# 🔷 Step 5: IMPORTANT (You missed this earlier)
+
+👉 Create Service
+
+```bash
+kubectl expose deployment demo-app2 --type=NodePort --port=80
+```
+
+### ✅ Expected Output:
+
+```bash
+service/demo-app2 exposed
+```
+
+---
+
+# 🔷 Step 6: Verify Service
+
+```bash
+kubectl get services
+```
+
+### ✅ Expected Output:
+
+```bash
+NAME        TYPE       CLUSTER-IP      PORT(S)
+demo-app2   NodePort   10.x.x.x        80:3xxxx/TCP
+```
+
+---
+
+# 🔷 Step 7: Access Application (Port 8081)
+
+```bash
+kubectl port-forward service/demo-app2 8081:80
+```
+
+### ✅ Expected Output:
+
+```bash
+Forwarding from 127.0.0.1:8081 -> 80
+```
+
+---
+
+# 🔷 Step 8: Open Browser
+
+```
+http://localhost:8081
+```
+
+👉 You will see:
+✔ **Nginx Welcome Page**
+
+---
+🔹 Expected Output
+Deployment: demo-app created
+Pod status: Running
+Service created successfully
+Browser shows Nginx welcome page
+🔹 Conclusion
+
+Kubernetes deployment was successfully created and exposed using a service, and the application was accessed on port 8081.
+
+✔ Changes made:
+
+Deployment name → demo-app
+Folder → k8s-service-demo
+Port → 8081

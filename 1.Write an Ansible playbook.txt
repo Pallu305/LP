@@ -1,0 +1,200 @@
+Here is a **complete practical write-up** for:
+
+# **1. Write an Ansible playbook to install and configure a web server on target nodes**
+
+---
+
+# **Aim**
+
+To install and configure a web server (Apache) on target nodes using Ansible.
+
+---
+
+# **Theory**
+
+**Ansible** is an automation tool used for configuration management and application deployment. It works in an **agentless** manner using SSH and executes tasks defined in **YAML playbooks**.
+
+### Key Concepts
+
+* **Inventory**: List of target machines (hosts)
+* **Playbook**: YAML file defining tasks
+* **Module**: Predefined unit of work (e.g., `apt`, `service`)
+* **Task**: Single action executed on target
+* **Become**: Used for privilege escalation (sudo)
+
+### Why Apache?
+
+Apache (`apache2`) is a widely used web server that serves web pages over HTTP.
+
+### Working Flow
+
+1. Ansible reads inventory
+2. Connects to host (localhost via WSL)
+3. Executes tasks sequentially
+4. Ensures **idempotency** (no repeated changes)
+
+---
+
+# **Requirements**
+
+* WSL (Ubuntu)
+* Ansible installed
+* Internet connection
+
+---
+
+# **Steps**
+
+---
+
+## **1. Open WSL (Ubuntu terminal)**
+
+```
+wsl
+```
+
+---
+
+## **2. Create Project Directory**
+
+```
+mkdir ansible-webserver
+cd ansible-webserver
+```
+
+---
+
+## **3. Create Inventory File**
+
+```
+vim inventory
+```
+
+Paste:
+
+```
+[web]
+localhost ansible_connection=local
+```
+
+Save:
+
+```
+ESC → :wq
+```
+
+---
+
+## **4. Create Playbook**
+
+```
+vim webserver.yml
+```
+
+Paste:
+
+```
+---
+- name: Install and Configure Apache Web Server
+  hosts: web
+  become: yes
+
+  tasks:
+    - name: Update package list
+      apt:
+        update_cache: yes
+
+    - name: Install Apache
+      apt:
+        name: apache2
+        state: present
+
+    - name: Start Apache service
+      service:
+        name: apache2
+        state: started
+        enabled: yes
+
+    - name: Create sample web page
+      copy:
+        content: "<h1>Welcome to Ansible Web Server</h1>"
+        dest: /var/www/html/index.html
+```
+
+Save:
+
+```
+ESC → :wq
+```
+
+---
+
+## **5. Run Playbook**
+
+```
+ansible-playbook -i inventory webserver.yml --ask-become-pass
+```
+
+---
+
+# **Expected Output (Terminal)**
+
+```
+PLAY [Install and Configure Apache Web Server] ****************
+
+TASK [Update package list] ************************************
+ok: [localhost]
+
+TASK [Install Apache] *****************************************
+changed: [localhost]
+
+TASK [Start Apache service] ***********************************
+ok: [localhost]
+
+TASK [Create sample web page] *********************************
+changed: [localhost]
+
+PLAY RECAP ****************************************************
+localhost : ok=4  changed=2  unreachable=0  failed=0
+```
+
+---
+
+# **6. Verify Output (Browser)**
+
+Open in browser:
+
+```
+http://localhost
+```
+
+### Expected Result:
+
+* Web page displays:
+
+```
+Welcome to Ansible Web Server
+```
+
+---
+
+# **Result**
+
+The Apache web server was successfully installed, configured, and verified using an Ansible playbook.
+
+---
+
+# **Conclusion**
+
+* Ansible simplifies server setup using automation
+* No manual installation required
+* Tasks are reusable and consistent
+* Ensures **idempotency** (safe to run multiple times)
+
+---
+
+If you want, I can also give:
+
+* **Viva questions**
+* **Common errors + fixes**
+* **Diagram for understanding flow**

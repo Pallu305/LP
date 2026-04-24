@@ -1,0 +1,197 @@
+Jenkins is an open-source automation tool used for Continuous
+Integration (CI) and Continuous Deployment (CD) in software
+development. It helps developers automatically build, test, and deploy
+applications, making the development process faster and more reliable.
+Jenkins supports a wide range of plugins, allowing it to integrate with
+various tools like Git, Docker, and Maven. It runs on a server and
+provides a web-based interface to manage automation pipelines.
+Key points:
+ Open-source automation server
+ Used for CI/CD pipelines
+ Supports many plugins for integration
+ Automates build, test, and deployment processes
+ Improves software quality and delivery speed
+
+CI/CD (Continuous Integration and Continuous
+
+Deployment/Delivery)
+
+CI/CD (Continuous Integration and Continuous Deployment/Delivery)
+is a software development practice that automates the process of
+building, testing, and deploying code. It helps developers frequently
+
+integrate code changes into a shared repository and ensures that the
+application is always in a deployable state.
+Key points:
+ Continuous Integration (CI): Automatically builds and tests code
+whenever changes are made
+ Continuous Delivery (CD): Ensures code is ready for deployment
+at any time
+ Continuous Deployment (CD): Automatically deploys code to
+production without manual steps
+ Reduces errors and improves code quality
+ Speeds up development and release cycles
+Prometheus
+
+Prometheus is an open-source monitoring and alerting tool used to
+collect and analyze system and application metrics in real time. It stores
+data as time-series and helps track performance, detect issues, and
+generate alerts when problems occur.
+Key points:
+ Open-source monitoring system
+ Collects real-time metrics (CPU, memory, requests, etc.)
+ Uses time-series database for data storage
+ Powerful query language (PromQL)
+ Supports alerting and integrates with tools like Grafana
+ Widely used in cloud and DevOps environments
+
+Grafana
+
+Grafana is an open-source data visualization and monitoring tool used to
+create interactive dashboards from various data sources. It helps users
+visualize metrics, logs, and system performance in real time, making it
+easier to monitor and analyze applications and infrastructure.
+Key points:
+ Open-source visualization tool
+ Creates interactive and customizable dashboards
+
+ Connects with data sources like Prometheus, MySQL, and
+Elasticsearch
+ Displays real-time metrics and logs
+ Supports alerts and notifications
+ Widely used in DevOps and cloud monitoring
+
+Steps
+
+1 — FIX DOCKER
+ Fix Dicker config file
+vim ~/.docker/config.json
+ Press i and make file like this:
+{}
+ Press Esc then shit + : then wq
+
+2 — RUN JENKINS
+ Run in WSL, Run Docker Container
+docker run -d \
+--name jenkins \
+-p 8080:8080 \
+-p 50000:50000 \
+-v jenkins_home:/var/jenkins_home \
+-v /var/run/docker.sock:/var/run/docker.sock \
+jenkins/jenkins:lts
+ Wait 2 Min
+
+3— GET PASSWORD
+ Get Jenkins Initial password
+docker exec -it jenkins cat
+/var/jenkins_home/secrets/initialAdminPassword
+ Copy password and paste it to Jenkins Browser
+
+4— OPEN JENKINS
+ Open in browser:
+
+http://localhost:8080
+ Paste password
+ Install suggested plugins
+ Create user
+
+5— FIX DOCKER INSIDE JENKINS
+ Run in WSL TERMINAL
+docker exec -u 0 -it jenkins bash
+ Inside container run following commands one by one :
+apt update
+apt install docker.io -y
+chmod 666 /var/run/docker.sock
+usermod -aG docker jenkins
+ Exit
+exit
+ Restart Jenkins
+docker restart jenkins
+6 — CREATE PIPELINE
+ Browser → Jenkins → New Item → Pipeline
+ Pipeline Code
+pipeline {
+agent any
+stages {
+stage(&#39;Clone Code&#39;) {
+steps {
+git branch: &#39;main&#39;, url: &#39;https://github.com/SwarupsinhPatil/painter.git&#39;
+}
+}
+stage(&#39;Build Docker Image&#39;) {
+steps {
+
+sh &#39;docker build -t myapp .&#39;
+}
+}
+stage(&#39;Run Container&#39;) {
+steps {
+sh &#39;&#39;&#39;
+docker stop myapp-container || true
+docker rm myapp-container || true
+docker run -d -p 8082:80 --name myapp-container myapp
+&#39;&#39;&#39;
+}
+}
+}
+}
+ Replace your repo link
+
+7— RUN PIPELINE
+ Click Build Now
+
+8 — CHECK APP
+ Open
+http://localhost:8082
+9— CREATE NETWORK (AVOID CONNECTION ERRORS)
+ Run in WSL
+docker network create monitoring
+10 — RUN NODE EXPORTER (METRICS)
+ Run in WSL
+docker run -d \
+--name node-exporter \
+--network monitoring \
+
+-p 9100:9100 \
+prom/node-exporter
+
+11 — CREATE PROMETHEUS CONFIG
+ Run in WSL
+vim prometheus.yml
+ Press i and Paste
+global:
+scrape_interval: 5s
+scrape_configs:
+- job_name: &#39;node&#39;
+static_configs:
+- targets: [&#39;node-exporter:9100&#39;]
+12 — RUN PROMETHEUS
+ Run in WSl to create and run Prometheus Container
+docker run -d \
+--name prometheus \
+--network monitoring \
+-p 9090:9090 \
+-v $(pwd)/prometheus.yml:/etc/prometheus/prometheus.yml \
+prom/prometheus
+13 — RUN GRAFANA
+ Run in WSL to create and run Grafana Container
+docker run -d \
+--name grafana \
+--network monitoring \
+-p 3000:3000 \
+grafana/grafana
+
+14 — OPEN GRAFANA
+ Open
+http://localhost:3000
+ Login: admin / admin
+15 — CONNECT Prometheus in GRAFANA
+ Add Data Source → Prometheus
+ URL:
+http://prometheus:9090
+ Save &amp; Test
+
+16 — IMPORT DASHBOARD
+ Dashboard → Import Dashboard
+ Use ID:
+1860

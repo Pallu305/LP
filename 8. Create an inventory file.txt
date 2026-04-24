@@ -1,0 +1,335 @@
+Here is the **complete practical write-up** for:
+
+# **8. Create an inventory file and demonstrate variable usage and task execution in Ansible**
+
+---
+
+# **Aim**
+
+To create an Ansible inventory file and demonstrate the use of variables in a playbook for task execution.
+
+---
+
+# **Theory**
+
+In Ansible, an **inventory file** defines the list of target hosts where tasks will be executed.
+
+### Key Concepts
+
+* **Inventory**: Contains host details and grouping
+* **Variables (vars)**: Used to store values and reuse them dynamically
+* **Playbook**: Executes tasks using defined variables
+* **Templating**: Variables are accessed using `{{ variable_name }}`
+
+### Why Variables?
+
+* Avoid hardcoding values
+* Improve flexibility and reusability
+* Make playbooks dynamic and scalable
+
+### Working Flow
+
+1. Inventory defines the target host
+2. Variables are declared inside playbook
+3. Tasks use variables dynamically
+4. Execution happens on target system
+
+---
+
+# **Requirements**
+
+* WSL (Ubuntu)
+* Ansible installed
+
+---
+
+# **Steps**
+
+---
+
+## **1. Open WSL (Ubuntu)**
+
+```
+wsl
+```
+
+---
+
+## **2. Create Project Directory**
+
+```
+mkdir ansible-variable
+cd ansible-variable
+```
+
+---
+
+## **3. Create Inventory File**
+
+```
+vim inventory
+```
+
+Paste:
+
+```
+[web]
+localhost ansible_connection=local ansible_user=ubuntu
+```
+
+Save:
+
+```
+ESC → :wq
+```
+
+---
+
+## **4. Create Playbook**
+
+```
+vim variable.yml
+```
+
+Paste:
+
+```
+---
+- name: Demonstrate Variables in Ansible
+  hosts: web
+  become: yes
+
+  vars:
+    package_name: nginx
+    service_name: nginx
+    message: "Hello from Ansible Variables"
+
+  tasks:
+    - name: Install package using variable
+      apt:
+        name: "{{ package_name }}"
+        state: present
+        update_cache: yes
+
+    - name: Start service using variable
+      service:
+        name: "{{ service_name }}"
+        state: started
+        enabled: yes
+
+    - name: Create custom web page
+      copy:
+        content: "{{ message }}"
+        dest: /var/www/html/index.html
+```
+
+Save:
+
+```
+ESC → :wq
+```
+
+---
+
+## **5. Run Playbook**
+
+```
+ansible-playbook -i inventory variable.yml --ask-become-pass
+```
+
+---
+
+# **Expected Output (Terminal)**
+
+```
+PLAY [Demonstrate Variables in Ansible] ***********************
+
+TASK [Install package using variable] *************************
+changed: [localhost]
+
+TASK [Start service using variable] ***************************
+ok: [localhost]
+
+TASK [Create custom web page] *********************************
+changed: [localhost]
+
+PLAY RECAP ***************************************************
+localhost : ok=3  changed=2  unreachable=0  failed=0
+```
+
+---
+
+# **6. Verify Output (Browser)**
+
+Open:
+
+```
+http://localhost
+```
+
+### Expected Result:
+
+```
+Hello from Ansible Variables
+```
+
+---
+
+# **Result**
+
+The inventory file was successfully created, and variables were used in the playbook to execute tasks dynamically.
+
+---
+
+# **Conclusion**
+
+* Variables make playbooks reusable and flexible
+* Inventory helps manage target systems efficiently
+* Reduces hardcoding and improves automation design
+
+---
+
+If you want next:
+
+* **12 (Handlers) in same full format**
+* or **combined viva + theory shortcuts for exam**
+
+
+This error means **Nginx installed successfully, but failed to start**.
+Let’s fix it step-by-step.
+
+---
+
+# 🔴 **Why this happens**
+
+Common causes:
+
+1. **Port conflict** → Another service (like Apache) already using port 80
+2. **Nginx config error**
+3. **Service not installed properly**
+4. **WSL service issues (systemd behavior)**
+
+👉 In your case, **most likely reason = Apache already running on port 80**
+
+---
+
+# ✅ **Step-by-Step Fix**
+
+---
+
+## **1. Check which service is using port 80**
+
+Run:
+
+```
+sudo lsof -i :80
+```
+
+### If you see `apache2` → that’s the issue
+
+---
+
+## **2. Stop Apache (if installed earlier)**
+
+```
+sudo systemctl stop apache2
+```
+
+Also disable it:
+
+```
+sudo systemctl disable apache2
+```
+
+---
+
+## **3. Start Nginx again**
+
+```
+sudo systemctl start nginx
+```
+
+Check status:
+
+```
+sudo systemctl status nginx
+```
+
+---
+
+## **4. If still error → check logs**
+
+```
+sudo journalctl -xeu nginx.service
+```
+
+---
+
+## **5. Alternative Fix (change port instead of stopping Apache)**
+
+Edit Nginx config:
+
+```
+sudo vim /etc/nginx/sites-available/default
+```
+
+Change:
+
+```
+listen 80;
+```
+
+to:
+
+```
+listen 8081;
+```
+
+Then:
+
+```
+sudo systemctl restart nginx
+```
+
+Open:
+
+```
+http://localhost:8081
+```
+
+---
+
+# ✅ **Important Note (WSL Users)**
+
+Sometimes `systemctl` doesn’t work properly in WSL.
+
+If that happens, use:
+
+```
+sudo service nginx start
+```
+
+---
+
+# ✅ **Quick Summary**
+
+| Problem              | Solution                             |
+| -------------------- | ------------------------------------ |
+| Port already used    | Stop Apache                          |
+| Service not starting | Check logs                           |
+| WSL issue            | Use `service` instead of `systemctl` |
+| Conflict persists    | Change port                          |
+
+---
+
+# 💡 **Best Practice for Your Practical**
+
+👉 Use **either Apache OR Nginx**, not both at same time
+👉 For exams → Apache is safer (less errors)
+
+---
+
+If you want, I can:
+
+* Fix your exact playbook
+* Or give **error-free version (works 100% in WSL)**

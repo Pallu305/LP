@@ -1,0 +1,437 @@
+Here is **Practical 13 (complete, exam-ready + clear steps + expected output + explanation)** 👇
+
+---
+
+# 🔷 Practical 13
+
+## **Using Kubernetes, create a deployment for a containerized application and verify pod status**
+
+---
+
+# 🔹 Aim
+
+To create a Kubernetes deployment and verify the status of pods using appropriate commands.
+
+---
+
+# 🔹 Theory
+
+### 🔸 Deployment
+
+* Manages creation and maintenance of pods
+* Ensures required number of pods are running
+
+---
+
+### 🔸 Pod
+
+* Smallest unit in Kubernetes
+* Contains container(s) running application
+
+---
+
+### 🔸 Pod Status
+
+* **Pending** → being created
+* **Running** → working correctly ✅
+* **Failed** → error
+* **CrashLoopBackOff** → restarting repeatedly
+
+---
+
+# 🔹 Requirements
+
+* Kubernetes enabled
+* kubectl installed
+
+---
+
+# 🔹 Execution Steps
+
+## 🔷 Step 1: Create Folder
+
+```bash id="2q4n6l"
+mkdir k8s-pod-status-demo
+cd k8s-pod-status-demo
+```
+
+---
+
+## 🔷 Step 2: Create Deployment
+
+```bash id="d6f06l"
+kubectl create deployment status-app --image=nginx
+```
+
+### ✅ Expected Output:
+
+```bash id="33dkw0"
+deployment.apps/status-app created
+```
+
+---
+
+## 🔷 Step 3: Check Pods
+
+```bash id="2f5bop"
+kubectl get pods
+```
+
+### ✅ Expected Output:
+
+```bash id="yfyhda"
+NAME                         READY   STATUS    RESTARTS
+status-app-xxxxx-xxxxx       1/1     Running   0
+```
+
+👉 If not running → wait few seconds
+
+---
+
+## 🔷 Step 4: Detailed Pod Information
+
+```bash id="h7qoz3"
+kubectl describe pods
+```
+
+### ✅ Expected Output (important parts):
+
+```bash id="r4fs13"
+Name:         status-app-xxxxx
+Status:       Running
+Containers:
+  nginx:
+    Image: nginx
+    State: Running
+```
+
+---
+
+## 🔷 Step 5: Check Deployment Status
+
+```bash id="ks2v2y"
+kubectl get deployments
+```
+
+### ✅ Expected Output:
+
+```bash id="k6bbqj"
+NAME         READY   UP-TO-DATE   AVAILABLE
+status-app   1/1     1            1
+```
+
+---
+
+# 🔹 Output
+
+* Deployment created successfully
+* Pod created and running
+* Pod status verified using commands
+* Deployment status confirmed
+
+---
+
+# 🔹 Working Explanation
+
+1. Deployment creates a pod using nginx image
+2. Pod pulls image and starts container
+3. `kubectl get pods` shows basic status
+4. `kubectl describe pods` shows detailed info
+5. Deployment ensures pod stays running
+
+---
+
+# 🔹 Conclusion
+
+A Kubernetes deployment was successfully created, and pod status was verified using appropriate commands.
+
+---
+
+# 🔹 Viva Questions
+
+### Q1: What is pod status?
+
+👉 Current state of a pod
+
+### Q2: Command to check pods?
+
+👉 `kubectl get pods`
+
+### Q3: Command for detailed info?
+
+👉 `kubectl describe pods`
+
+### Q4: What is Running state?
+
+👉 Pod is working correctly
+
+### Q5: What is CrashLoopBackOff?
+
+👉 Pod repeatedly crashing
+
+---
+
+# 🔹 Final Understanding
+
+👉 **Main goal of this practical:**
+✔ Create deployment
+✔ Check if pod is **Running**
+
+---
+
+# 🔹 Memory Shortcut
+
+👉 **Flow:**
+
+* Create → Check Pods → Describe → Verify
+
+Here’s a **deeper, step-by-step understanding of Practical 13**—what each command does internally and how to interpret results 👇
+
+---
+
+# 🔷 Practical 13 — Deep Explanation
+
+## **Create deployment & verify pod status**
+
+---
+
+## 🔹 Big Picture (What you’re doing)
+
+You ask Kubernetes:
+
+> “Run my application (nginx) and keep it running.”
+
+Kubernetes then:
+
+1. Creates a **Deployment**
+2. Deployment creates a **ReplicaSet**
+3. ReplicaSet creates a **Pod**
+4. Pod runs the **Container (nginx)**
+
+👉 Chain:
+**Deployment → ReplicaSet → Pod → Container**
+
+---
+
+## 🔹 Step 1: Create Deployment
+
+```bash
+kubectl create deployment status-app --image=nginx
+```
+
+### ✔ What happens internally?
+
+* Deployment object is created
+* Kubernetes:
+
+  * Pulls nginx image
+  * Creates 1 ReplicaSet
+  * ReplicaSet creates 1 Pod
+  * Pod starts container
+
+### ✔ Expected output:
+
+```bash
+deployment.apps/status-app created
+```
+
+---
+
+## 🔹 Step 2: Check Pods
+
+```bash
+kubectl get pods
+```
+
+### ✔ What this shows:
+
+* Pod name
+* READY → container running or not
+* STATUS → current state
+
+---
+
+### 🔸 Possible statuses:
+
+| Status           | Meaning              |
+| ---------------- | -------------------- |
+| Pending          | Pod is being created |
+| Running ✅        | Everything working   |
+| ImagePullBackOff | Image not found      |
+| CrashLoopBackOff | App crashing         |
+
+---
+
+### ✔ Correct output:
+
+```bash
+status-app-xxxxx   1/1   Running
+```
+
+👉 Meaning:
+
+* 1 container inside pod
+* 1 is running
+
+---
+
+## 🔹 Step 3: Describe Pods (VERY IMPORTANT)
+
+```bash
+kubectl describe pods
+```
+
+### ✔ What it shows:
+
+Detailed info like:
+
+* Node where pod is running
+* Image used
+* Events (errors if any)
+* Container state
+
+---
+
+### ✔ Key parts to understand:
+
+#### 1. Status
+
+```bash
+Status: Running
+```
+
+✔ Pod is healthy
+
+---
+
+#### 2. Container Info
+
+```bash
+Containers:
+  nginx:
+    Image: nginx
+    State: Running
+```
+
+✔ Container started successfully
+
+---
+
+#### 3. Events (MOST IMPORTANT for errors)
+
+```bash
+Events:
+  Pulled image
+  Created container
+  Started container
+```
+
+✔ Shows full lifecycle
+
+---
+
+## 🔹 Step 4: Check Deployment
+
+```bash
+kubectl get deployments
+```
+
+### ✔ Output:
+
+```bash
+status-app   1/1   1   1
+```
+
+### ✔ Meaning:
+
+| Column     | Meaning             |
+| ---------- | ------------------- |
+| READY      | running pods        |
+| UP-TO-DATE | latest version pods |
+| AVAILABLE  | working pods        |
+
+👉 `1/1` = success
+
+---
+
+## 🔹 What “Verify Pod Status” REALLY means
+
+Examiner expects you to confirm:
+
+✔ Pod is created
+✔ Pod is running
+✔ No errors
+✔ Deployment matches desired state
+
+---
+
+## 🔹 Common Errors (VERY IMPORTANT)
+
+### ❌ Image issue
+
+```bash
+ImagePullBackOff
+```
+
+👉 Fix: check image name
+
+---
+
+### ❌ Pod not starting
+
+```bash
+CrashLoopBackOff
+```
+
+👉 Fix: check logs
+
+```bash
+kubectl logs <pod-name>
+```
+
+---
+
+### ❌ Pod stuck
+
+```bash
+Pending
+```
+
+👉 Fix:
+
+* Wait
+* Check resources
+
+---
+
+## 🔹 Real-Life Understanding
+
+* Deployment = Manager
+* ReplicaSet = Supervisor
+* Pod = Worker
+* Container = Actual task
+
+👉 You are checking:
+➡️ “Is worker doing job properly?”
+
+---
+
+## 🔹 Final Output (What examiner expects)
+
+* Deployment created successfully
+* Pod status is **Running**
+* Detailed status verified using `describe`
+* No errors in events
+
+---
+
+## 🔹 One-Line Summary
+
+👉 “Pod status verification ensures that the deployed application is running correctly without errors.”
+
+---
+
+If you want next:
+✔ Practical 19 (final one)
+✔ OR I can give **diagram (very helpful for viva + marks)**
+

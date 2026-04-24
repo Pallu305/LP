@@ -1,0 +1,491 @@
+# 🧪 **GitHub Repository Creation and Commit Operations**
+
+---
+
+# 🎯 Aim
+
+To create a repository on GitHub, add files, and perform commit operations using Git with proper messages.
+
+---
+
+# 📘 Theory
+
+### 🔹 Version Control System
+
+Tracks changes in files and allows reverting to previous versions.
+
+### 🔹 Git
+
+A distributed version control system that works locally and remotely.
+
+### 🔹 Repository
+
+A storage location for project files and their history.
+
+### 🔹 Workflow
+
+```text
+Working Directory → Staging Area → Repository
+```
+
+* **Working Directory**: where files are created/edited
+* **Staging Area**: files prepared for commit
+* **Repository**: saved snapshots (commits)
+
+---
+
+# ⚙️ Requirements
+
+* Git installed
+* GitHub account
+* Command Prompt (CMD)
+
+---
+
+# 🧪 Procedure (Step-by-Step)
+
+---
+
+## 🔹 Step 1: Create Project Folder
+
+```cmd
+cd Desktop
+mkdir github-demo
+cd github-demo
+```
+
+### ✔️ Expected Output
+
+```text
+C:\Users\Pallavi\Desktop\github-demo>
+```
+
+---
+
+## 🔹 Step 2: Initialize Git Repository
+
+```cmd
+git init
+```
+
+### ✔️ Expected Output
+
+```text
+Initialized empty Git repository in ...\github-demo\.git\
+```
+
+---
+
+## 🔹 Step 3: Create a File
+
+```cmd
+echo Hello GitHub > file.txt
+```
+
+### ✔️ Expected Output
+
+* `file.txt` is created
+
+Check:
+
+```cmd
+dir
+```
+
+---
+
+## 🔹 Step 4: Check Git Status
+
+```cmd
+git status
+```
+
+### ✔️ Expected Output
+
+```text
+On branch master
+
+No commits yet
+
+Untracked files:
+  file.txt
+```
+
+---
+
+## 🔹 Step 5: Add File to Staging Area
+
+```cmd
+git add file.txt
+```
+
+Check:
+
+```cmd
+git status
+```
+
+### ✔️ Expected Output
+
+```text
+Changes to be committed:
+  new file: file.txt
+```
+
+---
+
+## 🔹 Step 6: Commit the File
+
+```cmd
+git commit -m "Initial commit: added file.txt"
+```
+
+### ✔️ Expected Output
+
+```text
+[master (root-commit)] Initial commit: added file.txt
+ 1 file changed, 1 insertion(+)
+ create mode 100644 file.txt
+```
+
+---
+
+## 🔹 Step 7: Create Repository on GitHub
+
+1. Open GitHub
+2. Click **New Repository**
+3. Enter:
+
+   * Name: `github-demo`
+4. Click **Create Repository**
+
+### ✔️ Expected Output
+
+* Repository page with URL displayed
+
+---
+
+## 🔹 Step 8: Connect Local Repository to GitHub
+
+```cmd
+git remote add origin https://github.com/your-username/github-demo.git
+```
+
+Verify:
+
+```cmd
+git remote -v
+```
+
+---
+
+## 🔹 Step 9: Rename Branch to main
+
+```cmd
+git branch -M main
+```
+
+---
+
+## 🔹 Step 10: Push to GitHub
+
+```cmd
+git push -u origin main
+```
+
+### ✔️ Expected Output
+
+```text
+Enumerating objects...
+Writing objects...
+To https://github.com/your-username/github-demo.git
+ * [new branch] main -> main
+```
+
+---
+
+## 🔹 Step 11: Verify Output on GitHub
+
+* Open repository in browser
+* You will see:
+
+  * `file.txt`
+  * Commit message
+
+---
+
+# 📊 Result
+
+* Repository created successfully
+* File added and committed
+* Changes pushed to GitHub
+
+---
+
+# ⚠️ Common Errors
+
+### 🔸 Authentication Failed
+
+→ Use GitHub token instead of password
+
+### 🔸 Branch Error
+
+```cmd
+git branch -M main
+```
+
+### 🔸 Remote Exists
+
+```cmd
+git remote remove origin
+git remote add origin <url>
+```
+
+---
+
+# 🧠 Key Concepts
+
+* Git tracks file changes locally
+* GitHub stores projects online
+* `git add` → staging
+* `git commit` → save snapshot
+* `git push` → upload to remote
+
+---
+
+# ❓ Viva Questions
+
+**Q1. What is Git?**
+→ Version control system
+
+**Q2. What is commit?**
+→ Snapshot of changes
+
+**Q3. What is repository?**
+→ Storage of project
+
+**Q4. Difference between add and commit?**
+→ Add = staging, Commit = saving
+
+---
+
+You’re very close—just one mistake: you **typed the GitHub URL as a command**, instead of adding it as a remote.
+
+---
+
+# ❌ What Went Wrong
+
+You ran:
+
+```cmd
+https://github.com/Pallu305/github-demo.git
+```
+
+👉 CMD tried to execute it → error:
+
+```
+'https:' is not recognized...
+```
+
+---
+
+# ⚠️ Main Issue
+
+You **did not add the remote repository**, so Git doesn’t know where to push.
+
+That’s why:
+
+```
+fatal: 'origin' does not appear to be a git repository
+```
+
+---
+
+# ✅ Fix (Do This Exactly)
+
+## 🔹 Step 1: Add Remote Properly
+
+```cmd
+git remote add origin https://github.com/Pallu305/github-demo.git
+```
+
+---
+
+## 🔹 Step 2: Verify Remote
+
+```cmd
+git remote -v
+```
+
+### ✔️ Expected Output
+
+```
+origin  https://github.com/Pallu305/github-demo.git (fetch)
+origin  https://github.com/Pallu305/github-demo.git (push)
+```
+
+---
+
+## 🔹 Step 3: Push Code
+
+```cmd
+git push -u origin main
+```
+
+---
+
+### ✔️ Expected Output
+
+```
+Enumerating objects...
+Writing objects...
+To https://github.com/Pallu305/github-demo.git
+ * [new branch] main -> main
+```
+
+---
+
+# ⚠️ If Authentication Popup Comes
+
+* Use **GitHub username**
+* Password = **Personal Access Token (NOT normal password)**
+
+---
+
+# 🧠 Concept (Important for Viva)
+
+### 🔹 What is `origin`?
+
+* Default name for remote repository
+
+### 🔹 Why needed?
+
+* Git must know **where to push code**
+
+---
+
+# ✅ Final Status After Fix
+
+| Step   | Status       |
+| ------ | ------------ |
+| Commit | ✔️ Done      |
+| Remote | ✔️ Add now   |
+| Push   | ✔️ After fix |
+
+---
+
+# 🚀 Summary
+
+👉 You only missed:
+
+```cmd
+git remote add origin <repo-url>
+```
+
+Everything else is correct 👍
+
+---
+
+If you want next:
+👉 I’ll give **branching + merging + conflict (next practical)** in same format with outputs.
+
+
+✅ **Perfect — your practical is successfully completed.**
+Let’s verify properly (like an examiner would check).
+
+---
+
+# ✅ Execution Verification
+
+### 🔹 Remote Added
+
+```cmd
+git remote -v
+```
+
+✔️ Output:
+
+```
+origin https://github.com/Pallu305/github-demo.git (fetch)
+origin https://github.com/Pallu305/github-demo.git (push)
+```
+
+👉 Correct — remote repository connected
+
+---
+
+### 🔹 Push Successful
+
+```cmd
+git push -u origin main
+```
+
+✔️ Output:
+
+```
+[new branch] main -> main
+branch 'main' set up to track 'origin/main'
+```
+
+👉 This confirms:
+
+* Code uploaded to GitHub ✔️
+* Branch tracking set ✔️
+
+---
+
+# 📊 Final Output (Write in Practical)
+
+* Repository created on GitHub
+* Local repository initialized using Git
+* File (`file.txt`) created and added
+* Commit performed with message
+* Remote repository linked
+* Files pushed successfully to GitHub
+
+---
+
+# 🔍 What You Should See on GitHub
+
+Open your repo → you will see:
+
+* `file.txt`
+* Commit: **Initial commit: added file.txt**
+
+---
+
+# 🧠 Key Concepts (Viva Ready)
+
+### 🔹 `git init`
+
+Creates a new Git repository
+
+### 🔹 `git add`
+
+Moves file to staging area
+
+### 🔹 `git commit`
+
+Saves snapshot with message
+
+### 🔹 `git remote add origin`
+
+Links local repo to GitHub
+
+### 🔹 `git push`
+
+Uploads code to remote repository
+
+---
+
+# 🎯 Conclusion
+
+✔️ All steps executed correctly
+✔️ Errors identified and fixed properly
+✔️ Final output achieved successfully
+
+---
+
+If you want next:
+👉 I’ll give **Branching + Merging + Conflict (full practical with outputs & explanation)**
+

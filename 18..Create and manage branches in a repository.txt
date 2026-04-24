@@ -1,0 +1,371 @@
+# 🧪 **Branch Management and Merging Strategies (Repository: `branch-strategy-lab`)**
+
+---
+
+# 🎯 Aim
+
+To create and manage branches in a new repository and demonstrate merging using different strategies with Git and GitHub.
+
+---
+
+# 📘 Workflow
+
+```text
+Create Repo → Add File → Create Branches → Commit → Merge (FF / No-FF / Rebase)
+```
+
+---
+
+# ⚙️ Procedure (Step-by-Step)
+
+---
+
+## 🔹 Step 1: Create Project Folder
+
+```cmd
+cd Desktop
+mkdir branch-strategy-lab
+cd branch-strategy-lab
+```
+
+### ✔️ Expected Output
+
+```text
+C:\Users\Pallavi\Desktop\branch-strategy-lab>
+```
+
+---
+
+## 🔹 Step 2: Initialize Git
+
+```cmd
+git init
+```
+
+### ✔️ Expected Output
+
+```text
+Initialized empty Git repository
+```
+
+---
+
+## 🔹 Step 3: Create Initial File
+
+```cmd
+echo Initial content > file.txt
+```
+
+---
+
+## 🔹 Step 4: Add and Commit
+
+```cmd
+git add file.txt
+git commit -m "Initial commit"
+```
+
+---
+
+## 🔹 Step 5: Create Repository on GitHub
+
+1. Open GitHub
+2. Create repository: **branch-strategy-lab**
+
+---
+
+## 🔹 Step 6: Connect and Push
+
+```cmd
+git remote add origin https://github.com/your-username/branch-strategy-lab.git
+git branch -M main
+git push -u origin main
+```
+
+---
+
+# 🌿 Branching and Merging
+
+---
+
+## 🔹 Step 7: Create Branch featureA
+
+```cmd
+git checkout -b featureA
+```
+
+---
+
+## 🔹 Step 8: Modify and Commit
+
+```cmd
+echo Feature A work >> file.txt
+git add file.txt
+git commit -m "Added feature A"
+```
+
+---
+
+# 🔁 Fast-Forward Merge
+
+---
+
+## 🔹 Step 9: Merge featureA
+
+```cmd
+git checkout main
+git merge featureA
+```
+
+### ✔️ Expected Output
+
+```text
+Fast-forward
+ file.txt | 1 +
+```
+
+---
+
+## 🔹 Step 10: Create Branch featureB
+
+```cmd
+git checkout -b featureB
+```
+
+---
+
+## 🔹 Step 11: Modify and Commit
+
+```cmd
+echo Feature B work >> file.txt
+git add file.txt
+git commit -m "Added feature B"
+```
+
+---
+
+# 🔁 No Fast-Forward Merge
+
+---
+
+## 🔹 Step 12: Merge with No-FF
+
+```cmd
+git checkout main
+git merge --no-ff featureB
+```
+
+### ✔️ Expected Output
+
+```text
+Merge made by the 'ort' strategy.
+```
+
+---
+
+## 🔹 Step 13: Create Branch featureC
+
+```cmd
+git checkout -b featureC
+```
+
+---
+
+## 🔹 Step 14: Modify and Commit
+
+```cmd
+echo Feature C work >> file.txt
+git add file.txt
+git commit -m "Added feature C"
+```
+
+---
+
+# 🔁 Rebase Strategy
+
+---
+
+## 🔹 Step 15: Rebase
+
+```cmd
+git checkout featureC
+git rebase main
+```
+
+---
+
+## 🔹 Step 16: Merge After Rebase
+
+```cmd
+git checkout main
+git merge featureC
+```
+
+### ✔️ Expected Output
+
+* Linear history (no extra merge commit)
+
+---
+
+## 🔹 Step 17: Push Final Changes
+
+```cmd
+git push origin main
+```
+
+---
+
+# 📊 Result
+
+* New repository (`branch-strategy-lab`) created ✔️
+* Branches managed successfully ✔️
+* Fast-forward merge performed ✔️
+* No fast-forward merge performed ✔️
+* Rebase strategy applied ✔️
+* Changes pushed to GitHub ✔️
+
+---
+
+# 🧠 Key Concepts
+
+| Strategy     | Meaning              |
+| ------------ | -------------------- |
+| Fast-forward | Direct merge         |
+| No-FF        | Keeps branch history |
+| Rebase       | Clean linear history |
+
+---
+
+# ❓ Viva Questions
+
+**Q1. What is fast-forward merge?**
+→ Direct merge without extra commit
+
+**Q2. What is rebase?**
+→ Rewriting commit history
+
+**Q3. Why use no-ff?**
+→ Preserve branch structure
+
+---
+
+# 🎯 Conclusion
+
+Branching and merging strategies help maintain clean, structured, and collaborative development workflows.
+
+Here’s **how your final output should look** after completing the branch management + merging strategies practical.
+
+---
+
+# 📊 ✅ 1. Final File Output
+
+Run:
+
+```cmd
+type file.txt
+```
+
+### ✔️ Expected Output
+
+```text
+Initial content
+Feature A work
+Feature B work
+Feature C work
+```
+
+👉 This shows all branch changes are successfully merged.
+
+---
+
+# 📊 ✅ 2. Git Status
+
+```cmd
+git status
+```
+
+### ✔️ Expected Output
+
+```text
+On branch main
+nothing to commit, working tree clean
+```
+
+👉 No pending changes → everything committed
+
+---
+
+# 📊 ✅ 3. Commit History (MOST IMPORTANT)
+
+```cmd
+git log --oneline
+```
+
+### ✔️ Expected Output (example)
+
+```text
+a1b2c3d Added feature C
+d4e5f6g Merge branch 'featureB'
+g7h8i9j Added feature B
+j1k2l3m Added feature A
+m4n5o6p Initial commit
+```
+
+👉 Key things examiner checks:
+
+* Merge commit for **featureB** ✔️
+* Linear history for **featureC (rebase)** ✔️
+
+---
+
+# 📊 ✅ 4. Branch List
+
+```cmd
+git branch
+```
+
+### ✔️ Expected Output
+
+```text
+* main
+  featureA
+  featureB
+  featureC
+```
+
+---
+
+# 📊 ✅ 5. GitHub Output (Final Check)
+
+Open repo on GitHub
+
+You should see:
+
+* Updated `file.txt` with all changes
+* Commit history
+* Merge commit visible
+
+---
+
+# 🧠 What Examiner Looks For
+
+✔️ Branches created
+✔️ Changes in each branch
+✔️ Fast-forward merge done
+✔️ No-fast-forward merge done
+✔️ Rebase applied
+✔️ Final merged output correct
+
+---
+
+# 🎯 Final Summary
+
+```text
+File → contains all features
+History → shows merge + commits
+Status → clean
+Repo → updated on GitHub
+```
+
+
+

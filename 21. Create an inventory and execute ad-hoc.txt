@@ -1,0 +1,400 @@
+Here is the **complete practical write-up** for:
+
+# **21. Create an inventory and execute ad-hoc commands using Ansible**
+
+---
+
+# **Aim**
+
+To create an inventory file and execute ad-hoc commands using Ansible.
+
+---
+
+# **Theory**
+
+**Ad-hoc commands** in Ansible are **one-line commands** used to perform quick tasks without writing a playbook.
+
+---
+
+### 🔹 Key Concepts
+
+* **Inventory** → defines target hosts
+* **Ad-hoc command** → single command execution
+* **Modules** → perform actions (e.g., `ping`, `apt`, `command`)
+
+---
+
+### 🔹 Why use Ad-hoc?
+
+* Quick testing
+* Simple operations
+* No need to create playbooks
+
+---
+
+### 🔹 Syntax
+
+```bash
+ansible <host-group> -i <inventory> -m <module> -a "arguments"
+```
+
+---
+
+# **Requirements**
+
+* WSL (Ubuntu)
+* Ansible installed
+
+---
+
+# **Steps**
+
+---
+
+## **1. Open WSL**
+
+```bash id="p41e22"
+wsl
+```
+
+---
+
+## **2. Create Project Folder**
+
+```bash id="8k3a5r"
+mkdir ansible-adhoc
+cd ansible-adhoc
+```
+
+---
+
+## **3. Create Inventory File**
+
+```bash id="7xsz1p"
+vim inventory
+```
+
+Paste:
+
+```bash id="2h0o1o"
+[web]
+localhost ansible_connection=local
+```
+
+Save:
+
+```id="d5t1qp"
+ESC → :wq
+```
+
+---
+
+# **4. Execute Ad-hoc Commands**
+
+---
+
+## ✅ **a) Check Connectivity (Ping)**
+
+```bash id="s8jbt1"
+ansible web -i inventory -m ping
+```
+
+### Expected Output:
+
+```id="p9h3z2"
+localhost | SUCCESS => {
+    "changed": false,
+    "ping": "pong"
+}
+```
+
+---
+
+## ✅ **b) Install Package**
+
+```bash id="9l3h6n"
+ansible web -i inventory -m apt -a "name=htop state=present" --ask-become-pass
+```
+
+### Expected Output:
+
+```id="7o1h0a"
+localhost | CHANGED => {
+    "changed": true
+}
+```
+
+---
+
+## ✅ **c) Check System Uptime**
+
+```bash id="c6w8kp"
+ansible web -i inventory -m command -a "uptime"
+```
+
+### Expected Output:
+
+```id="3i2l1s"
+localhost | SUCCESS | rc=0 >>
+ 10:30:01 up 1:20,  1 user,  load average: 0.10, 0.20, 0.15
+```
+
+---
+
+# **Result**
+
+The inventory was created successfully and ad-hoc commands were executed for different operations.
+
+---
+
+# **Conclusion**
+
+* Ad-hoc commands are useful for quick tasks
+* No need to write full playbooks
+* Useful for testing and administration
+
+---
+
+# 🧠 **Important Viva Points**
+
+* Used for **quick execution**
+* No YAML file required
+* Works using modules
+* Syntax includes host, module, and arguments
+
+---
+
+# ⚡ **Quick Summary**
+
+| Command | Purpose            |
+| ------- | ------------------ |
+| ping    | Check connectivity |
+| apt     | Install package    |
+| command | Run system command |
+
+---
+
+Here is a **clear explanation of where and how you see output** for Practical 21 (Ad-hoc commands):
+
+---
+
+# 📍 **Where do you see the output?**
+
+👉 You will see output **directly in the terminal (WSL Ubuntu)**
+
+* Same place where you run the command
+* No browser required
+
+---
+
+# 💻 **How the output looks (with meaning)**
+
+---
+
+## ✅ **1. Ping Command**
+
+```bash
+ansible web -i inventory -m ping
+```
+
+### Output:
+
+```bash
+localhost | SUCCESS => {
+    "changed": false,
+    "ping": "pong"
+}
+```
+
+### 🔍 Explanation
+
+* **SUCCESS** → Connection is working
+* **ping: pong** → Target is reachable
+* **changed: false** → No system change
+
+---
+
+## ✅ **2. Install Package**
+
+```bash
+ansible web -i inventory -m apt -a "name=htop state=present" --ask-become-pass
+```
+
+### Output:
+
+```bash
+localhost | CHANGED => {
+    "changed": true
+}
+```
+
+### 🔍 Explanation
+
+* **CHANGED** → Package was installed
+* **changed: true** → System modified
+
+👉 If run again:
+
+```bash
+localhost | SUCCESS => {
+    "changed": false
+}
+```
+
+→ Already installed (idempotency)
+
+---
+
+## ✅ **3. Uptime Command**
+
+```bash
+ansible web -i inventory -m command -a "uptime"
+```
+
+### Output:
+
+```bash
+localhost | SUCCESS | rc=0 >>
+ 10:30:01 up 1:20, 1 user, load average: 0.10, 0.20, 0.15
+```
+
+### 🔍 Explanation
+
+* **SUCCESS** → Command executed
+* **rc=0** → No error
+* **uptime data** → System running time
+
+---
+
+# 🎯 **Summary (Very Important)**
+
+| Command     | Where Output Shows | Type                     |
+| ----------- | ------------------ | ------------------------ |
+| ping        | Terminal           | JSON-like                |
+| apt install | Terminal           | Status (CHANGED/SUCCESS) |
+| command     | Terminal           | Direct system output     |
+
+---
+
+# ⚠️ **Important Note**
+
+👉 Ad-hoc commands:
+
+* ❌ Do NOT show output in browser
+* ✅ Always show in terminal
+
+---
+
+# 🧠 **Viva Answer**
+
+“The output of ad-hoc commands is displayed directly in the terminal where the command is executed. It shows the execution status such as SUCCESS or CHANGED along with the result of the module used.”
+
+This error is very common and easy to fix.
+
+---
+
+# 🔴 **Problem**
+
+```bash
+Permission denied
+Unable to acquire dpkg lock → are you root?
+```
+
+---
+
+# 🎯 **Meaning**
+
+👉 You are trying to install a package **without admin (sudo) permission**
+
+* `apt` requires **root access**
+* Ansible is running as **normal user**
+* So it cannot access `/var/lib/dpkg`
+
+---
+
+# ✅ **Fix (Correct Command)**
+
+Add **sudo privilege using Ansible option**
+
+```bash
+ansible web -i inventory -m apt -a "name=htop state=present" --ask-become-pass -b
+```
+
+---
+
+# 🔍 **What each part means**
+
+| Option              | Meaning               |
+| ------------------- | --------------------- |
+| `-b`                | Become (use sudo)     |
+| `--ask-become-pass` | Ask for sudo password |
+
+---
+
+# ⚡ **Alternative (Short form)**
+
+```bash
+ansible web -i inventory -m apt -a "name=htop state=present" -b -K
+```
+
+👉 `-K` = ask become password
+
+---
+
+# ✅ **Expected Output (After Fix)**
+
+```bash
+localhost | CHANGED => {
+    "changed": true
+}
+```
+
+---
+
+# ⚠️ **If still error**
+
+Run:
+
+```bash
+sudo apt update
+```
+
+Then try again.
+
+---
+
+# 🧠 **Why this happens (concept)**
+
+* Linux protects system files
+* Only **root user** can install software
+* Ansible needs `become: yes` or `-b`
+
+---
+
+# ✅ **Viva Answer**
+
+“The error occurred because the apt module requires root privileges. It was resolved by using the become option (-b) and providing the sudo password.”
+
+---
+
+# 💡 **Quick Rule (Remember)**
+
+👉 Whenever you use:
+
+* `apt`
+* `service`
+* `file (system paths)`
+
+✔️ Always use:
+
+```bash
+-b -K
+```
+
+---
+
+If you want, I can give:
+
+* **Top 10 Ansible errors + fixes (exam lifesaver)**
+
+

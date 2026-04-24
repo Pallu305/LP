@@ -1,0 +1,291 @@
+Here is the **complete practical write-up** for:
+
+# **15. Write an Ansible playbook to install multiple packages and ensure idempotency**
+
+---
+
+# **Aim**
+
+To install multiple packages using an Ansible playbook and verify idempotency.
+
+---
+
+# **Theory**
+
+Ansible ensures **idempotency**, meaning:
+
+> Running the same playbook multiple times will not change the system after the desired state is achieved.
+
+---
+
+### 🔹 Key Concepts
+
+* **Multiple packages** → Install list of packages in one task
+* **Idempotency** → No repeated changes if already configured
+* **state: present** → Ensures package is installed (not reinstalled)
+
+---
+
+### 🔹 Why Idempotency is Important?
+
+* Prevents unnecessary operations
+* Saves time and resources
+* Ensures consistent system state
+
+---
+
+### 🔹 Working Flow
+
+1. Playbook installs packages
+2. First run → packages installed (**changed**)
+3. Second run → no changes (**ok**)
+
+---
+
+# **Requirements**
+
+* WSL (Ubuntu)
+* Ansible installed
+
+---
+
+# **Steps**
+
+---
+
+## **1. Open WSL**
+
+```bash id="2t3jox"
+wsl
+```
+
+---
+
+## **2. Create Project Folder**
+
+```bash id="zt9zpw"
+mkdir ansible-multi
+cd ansible-multi
+```
+
+---
+
+## **3. Create Inventory File**
+
+```bash id="d5dzqf"
+vim inventory
+```
+
+Paste:
+
+```bash id="bz0o9g"
+[web]
+localhost ansible_connection=local
+```
+
+Save:
+
+```id="qkz4l1"
+ESC → :wq
+```
+
+---
+
+## **4. Create Playbook**
+
+```bash id="5qrmif"
+vim multi.yml
+```
+
+Paste:
+
+```yaml id="i6h1mn"
+---
+- name: Install Multiple Packages (Idempotency Demo)
+  hosts: web
+  become: yes
+
+  tasks:
+    - name: Install multiple packages
+      apt:
+        name:
+          - git
+          - curl
+          - vim
+        state: present
+        update_cache: yes
+```
+
+Save:
+
+```id="d9wxy7"
+ESC → :wq
+```
+
+---
+
+## **5. Run Playbook (First Time)**
+
+```bash id="9c9a4h"
+ansible-playbook -i inventory multi.yml --ask-become-pass
+```
+
+---
+
+# **Expected Output (First Run)**
+
+```id="7g8mhp"
+TASK [Install multiple packages] ******************************
+changed: [localhost]
+
+PLAY RECAP ****************************************************
+localhost : ok=1  changed=1  failed=0
+```
+
+👉 Packages are installed
+
+---
+
+## **6. Run Playbook Again (Second Time)**
+
+```bash id="9i1e84"
+ansible-playbook -i inventory multi.yml --ask-become-pass
+```
+
+---
+
+# **Expected Output (Second Run)**
+
+```id="l9r2mv"
+TASK [Install multiple packages] ******************************
+ok: [localhost]
+
+PLAY RECAP ****************************************************
+localhost : ok=1  changed=0  failed=0
+```
+
+👉 No changes → **Idempotency achieved**
+
+---
+
+# **Result**
+
+Multiple packages were installed successfully, and idempotency was verified by re-running the playbook.
+
+---
+
+# **Conclusion**
+
+* Ansible ensures **idempotent execution**
+* Multiple packages can be installed efficiently
+* Re-running playbook does not cause duplication
+
+---
+
+# 🧠 **Important Viva Points**
+
+* Idempotency = same result on repeated runs
+* `state: present` ensures no reinstallation
+* First run → `changed`, second run → `ok`
+* Makes automation safe and reliable
+
+---
+
+
+Here is a **clear explanation of the output** for Practical 15 (Idempotency):
+
+---
+
+# 🔍 **Output Understanding**
+
+## ✅ **First Run Output**
+
+```
+TASK [Install multiple packages] ***********
+changed: [localhost]
+
+PLAY RECAP ********************************
+localhost : ok=1  changed=1  failed=0
+```
+
+### ✔️ Meaning
+
+* **changed: [localhost]**
+  → Packages (`git`, `curl`, `vim`) were **not present earlier**, so Ansible installed them
+
+* **ok=1**
+  → 1 task executed successfully
+
+* **changed=1**
+  → System state was modified (installation happened)
+
+* **failed=0**
+  → No errors
+
+👉 **Conclusion:** Packages installed successfully
+
+---
+
+## ✅ **Second Run Output**
+
+```
+TASK [Install multiple packages] ***********
+ok: [localhost]
+
+PLAY RECAP ********************************
+localhost : ok=1  changed=0  failed=0
+```
+
+### ✔️ Meaning
+
+* **ok: [localhost]**
+  → Packages are already installed → no action needed
+
+* **changed=0**
+  → No changes made
+
+👉 **Conclusion:** System already in desired state
+
+---
+
+# 🎯 **Core Concept: Idempotency**
+
+| Run    | Status  | Reason             |
+| ------ | ------- | ------------------ |
+| First  | changed | Packages installed |
+| Second | ok      | Already installed  |
+
+---
+
+# 💡 **Why this happens**
+
+Because of:
+
+```yaml
+state: present
+```
+
+👉 It tells Ansible:
+
+* Install only if missing
+* Do nothing if already installed
+
+---
+
+# ⚡ **What if idempotency didn’t exist?**
+
+Every run would:
+
+* Reinstall packages
+* Waste time
+* Cause instability
+
+---
+
+# 🧠 **Final Explanation (Viva Ready)**
+
+“On the first run, Ansible installs the packages, so the output shows ‘changed’. On the second run, since the packages are already installed, no action is taken and the output shows ‘ok’. This demonstrates idempotency, where repeated execution does not alter the system state.”
+
+---
+
+
